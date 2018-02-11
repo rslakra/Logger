@@ -15,7 +15,7 @@
 	<property name="testCases.dir" value="${base.dir}/TestCases"/>
 
 	<!-- Libraries -->
-	<property name="libs.dir" value="${base.dir}/Libs"/>
+	<property name="libs.dir" value="${base.dir}/libs"/>
 	<property name="path.junit.jar" value="${libs.dir}/junit/junit-3.8.1.jar"/>
 
 	<!-- Build Paths -->
