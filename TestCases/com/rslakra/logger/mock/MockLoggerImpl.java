@@ -20,30 +20,27 @@
  * Devamatre reserves the right to modify the technical specifications and or 
  * features without any prior notice.
  *****************************************************************************/
-package com.rslakra.junit;
+package com.rslakra.logger.mock;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.log4j.Category;
+
+import com.devamatre.logger.LoggerImpl;
 
 /**
- *
- * @author Rohtash Singh (rohtash.singh@gmail.com)
+ * 
+ * @author Rohtash Lakra (rohtash.lakra@devamatre.com)
+ * @author Rohtash Singh Lakra (rohtash.singh@gmail.com)
+ * @created 2017-09-16 04:50:06 PM
+ * @version 1.0.0
+ * @since 1.0.0
  */
-public class TestSystemProperties {
-	
+public class MockLoggerImpl extends LoggerImpl {
+
 	/**
-	 * @param args
+	 * 
+	 * @param logger
 	 */
-	public static void main(String[] args) {
-		dumpSystemProperties();
-	}
-	
-	public static void dumpSystemProperties() {
-		Properties props = System.getProperties();
-		for(Iterator iter = props.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			System.out.println("Key : " + entry.getKey() + ", Value : " + entry.getValue());
-		}
+	public MockLoggerImpl(Category logger) {
+		super(logger);
 	}
 }

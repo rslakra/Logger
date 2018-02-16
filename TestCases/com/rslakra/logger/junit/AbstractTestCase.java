@@ -20,63 +20,90 @@
  * Devamatre reserves the right to modify the technical specifications and or 
  * features without any prior notice.
  *****************************************************************************/
-package com.rslakra.logger.testcases;
+package com.rslakra.logger.junit;
 
-import com.devamatre.logger.Logger;
-import com.rslakra.logger.junit.AbstractTestCase;
+import java.io.File;
+
 import com.rslakra.logger.mock.MockLogManager;
 
+import junit.framework.TestCase;
+
 /**
+ * Provides base functionality for all unit tests. This class contains
+ * <code>protected</code> methods that should be overridden by derived class.
  * 
  * @author Rohtash Lakra (rohtash.lakra@devamatre.com)
  * @author Rohtash Singh Lakra (rohtash.singh@gmail.com)
- * @created 2018-02-16 08:21:16 AM
+ * @created 2018-02-16 08:22:13 AM
  * @version 1.0.0
  * @since 1.0.0
  */
-public class LoggerTestCase extends AbstractTestCase {
+public class AbstractTestCase extends TestCase {
 
-	private static String[] MESSAGES = { "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "ALL" };
-	private static Logger logger = MockLogManager.getLogger(LoggerTestCase.class);
+	/** Configure Logger */
+	static {
+		MockLogManager.configure();
+	}
 
-	/**
-	 * 
-	 */
-	public void testFatal() {
-		logger.fatal("FATAL");
-		assertTrue("Fatal Error", MESSAGES[1].equals("FATAL"));
+	/* Constructor */
+	public AbstractTestCase() {
+
+		/* Clean up our mess when the tests are complete. */
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			/**
+			 * @see Runnable#run()
+			 */
+			public void run() {
+				System.out.println("Shutdown Hook!");
+				/*
+				 * don't uncomment this, it will delete all files from current
+				 * folder.
+				 */
+				// delete(new File("."));
+			}
+		}));
 	}
 
 	/**
-	 * 
+	 * (non-Javadoc)
+	 *
+	 * @throws Exception
+	 * @see junit.framework.TestCase#setUp()
 	 */
-	public void testError() {
-		logger.error("ERROR");
-		assertTrue("Fatal Error", MESSAGES[2].equals("ERROR"));
+	protected void setUp() throws Exception {
+		super.setUp();
 	}
 
 	/**
-	 * 
+	 * Tests Root Directory
 	 */
-	public void testWarn() {
-		logger.warn("WARN");
-		assertTrue("Fatal Error", MESSAGES[3].equals("WARN"));
+	public void testRootPath() {
+		assertTrue("E:\\Rohtash\\Data\\Examples\\Logger".equalsIgnoreCase(System.getProperty("user.dir")));
 	}
 
 	/**
-	 * 
+	 * Removes the given <code>path</code> irrespective of its contents.
+	 *
+	 * @param path
+	 *            The path to delete.
 	 */
-	public void testInfo() {
-		logger.info("INFO");
-		assertTrue("Fatal Error", MESSAGES[4].equals("INFO"));
-	}
+	private void delete(File path) {
+		if (path.isFile()) {
+			path.delete();
+			return;
+		}
+		File[] files = path.listFiles();
+		if (files == null) {
+			return;
+		}
 
-	/**
-	 * 
-	 */
-	public void testDebug() {
-		logger.debug("DEBUG");
-		assertTrue("Fatal Error", MESSAGES[5].equals("DEBUG"));
+		for (int i = 0; i < files.length; ++i) {
+			if (files[i].isDirectory()) {
+				delete(files[i]);
+			}
+			files[i].delete();
+		}
+		path.delete();
 	}
 
 	/**

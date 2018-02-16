@@ -20,7 +20,7 @@
  * Devamatre reserves the right to modify the technical specifications and or 
  * features without any prior notice.
  *****************************************************************************/
-package com.rslakra.logger;
+package com.devamatre.logger;
 
 /**
  * Logger.java
