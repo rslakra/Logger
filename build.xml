@@ -51,6 +51,7 @@
  -->
 <project name="dLogger" default="all" basedir=".">
 	<echo />
+	<echo message="Project Folder:${basedir}" />
 	<echo message="Building '${ant.project.name}' Project ..." />
 
 	<!-- set date & time properties to use later -->
@@ -69,26 +70,25 @@
 	<property file="${basedir}/build.properties" />
 
 	<!-- Basic Structure Settings -->
-	<property name="base.dir" value="${basedir}" />
-	<property name="src.dir" value="${base.dir}/src" />
+	<property name="src.dir" value="${basedir}/src" />
 	<property name="jar.file" value="${ant.project.name}-v${impl-version}.jar" />
 	<property name="zip.file" value="${ant.project.name}.zip" />
 
 	<!-- Libraries -->
-	<property name="lib.dir" value="${base.dir}/libs" />
+	<property name="libs.dir" value="${basedir}/libs" />
 
 	<!-- Build Paths -->
-	<property name="build.dir" value="${base.dir}/build" />
+	<property name="build.dir" value="${basedir}/build" />
 	<property name="classes.dir" value="${build.dir}/classes" />
 
 	<!-- TestCase Settings -->
-	<property name="tcSrc.dir" value="${base.dir}/TestCases" />
-	<property name="testcases.results.dir" value="${build.dir}/testcases-results" />
+	<property name="testCasesSrc.dir" value="${basedir}/testCases" />
+	<property name="testCasesResults.dir" value="${build.dir}/testCasesResults" />
 
 	<!-- Create Targets -->
 	<!-- Build CLASSPATH Settings -->
 	<path id="build.classpath">
-		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		<fileset dir="${libs.dir}" includes="**/*.jar" />
 	</path>
 
 	<!-- = = = = = = = = = = = = = = = = =
@@ -121,7 +121,7 @@
 			</chainedmapper>
 		</mapper>
 		<path>
-			<fileset dir="${lib.dir}" includes="**/*.jar" />
+			<fileset dir="${libs.dir}" includes="**/*.jar" />
 		</path>
 	</pathconvert>
 
@@ -134,9 +134,19 @@
 	<target name="clean" description="Removing Directories...">
 		<delete dir="${build.dir}" />
 		<delete dir="${deploy.dir}" />
-		<delete file="${base.dir}/dLogs.log" />
-		<delete file="${base.dir}/result.txt" />
-		<delete file="${base.dir}/result.xml" />
+		<!-- Delete 'release-v*' folders, if any. >
+		<delete includeEmptyDirs="true">
+			<fileset dir="${basedir}" includes="**/release*" />
+		</delete>
+		-->
+
+		<delete file="${basedir}/dLogs.log" />
+		<delete file="${basedir}/result.txt" />
+		<delete file="${basedir}/result.xml" />
+		<!-- Delete .jar files, if any. -->
+		<delete>
+			<fileset dir="${basedir}" includes="*.jar" />
+		</delete>
 	</target>
 
 	<!-- Creates Directories.... -->
@@ -156,7 +166,7 @@
 		<mkdir dir="${deploy.dir}" />
 		<jar destfile="${deploy.dir}/${jar.file}">
 			<fileset dir="${classes.dir}" includes="**" />
-			<fileset dir="${base.dir}" includes="log4j.properties, dLog4j.properties, dLog4j.xml" />
+			<fileset dir="${basedir}" includes="log4j.properties, dLog4j.properties, dLog4j.xml" />
 
 			<!-- MANIFEST.MF Properties -->
 			<manifest>
@@ -174,7 +184,7 @@
 		</jar>
 
 		<!-- copy dLogger jar file into base directory -->
-		<copy file="${deploy.dir}/${jar.file}" todir="${base.dir}" overwrite="true" />
+		<copy file="${deploy.dir}/${jar.file}" todir="${basedir}" overwrite="true" />
 
 		<tstamp>
 			<format property="NOW" pattern="${nowPattern}" />
@@ -187,10 +197,10 @@
 	<target name="run.client" depends="compile.unittest">
 		<java fork="true" classname="${client.main-class}">
 			<classpath>
-				<pathelement path="${lib.dir}/log4j-1.2.17.jar" />
-				<pathelement path="${lib.dir}/junit_3.8.1.jar" />
+				<pathelement path="${libs.dir}/log4j-1.2.17.jar" />
+				<pathelement path="${libs.dir}/junit_3.8.1.jar" />
 				<pathelement path="${classes.dir}" />
-				<pathelement location="${base.dir}/${jar.file}" />
+				<pathelement location="${basedir}/${jar.file}" />
 			</classpath>
 		</java>
 		<!--java fork="true" classname="${client.main}">
@@ -211,14 +221,14 @@
 		directory prior to forking in order for it to be found within same 
 		classloader as ANT task -->
 		<!-- There MUST be a better way to do this! -->
-		<copy file="${lib.dir}/junit_3.8.1.jar" tofile="${ant.home}/lib/junit.jar" />
-		<mkdir dir="${testcases.results.dir}" />
+		<copy file="${libs.dir}/junit_3.8.1.jar" tofile="${ant.home}/lib/junit.jar" />
+		<mkdir dir="${testCasesResults.dir}" />
 		<junit fork="yes" printsummary="yes" haltonfailure="no">
 			<classpath>
-				<pathelement path="${lib.dir}/log4j-1.2.17.jar" />
-				<pathelement path="${lib.dir}/junit_3.8.1.jar" />
+				<pathelement path="${libs.dir}/log4j-1.2.17.jar" />
+				<pathelement path="${libs.dir}/junit_3.8.1.jar" />
 				<pathelement path="${classes.dir}" />
-				<pathelement location="${base.dir}/${jar.file}" />
+				<pathelement location="${basedir}/${jar.file}" />
 			</classpath>
 			<formatter type="plain" />
 
@@ -226,7 +236,7 @@
 				<formatter type="xml" />
 			</test>
 
-			<batchtest haltonfailure="false" todir="${testcases.results.dir}">
+			<batchtest haltonfailure="false" todir="${testCasesResults.dir}">
 				<fileset dir="${classes.dir}">
 					<include name="**/*TestCase.class" />
 					<!--exclude name="**/AllTests.java"/-->
@@ -237,14 +247,14 @@
 
 	<!-- Compile Java Files and store in /build/classes directory -->
 	<target name="compile.unittest" depends="build">
-		<javac srcdir="${tcSrc.dir}" destdir="${classes.dir}" debug="true" includes="**/*.java">
+		<javac srcdir="${testCasesSrc.dir}" destdir="${classes.dir}" debug="true" includes="**/*.java">
 			<classpath>
 				<fileset dir="${classes.dir}">
 					<include name="**/*TestCase.class" />
 				</fileset>
-				<fileset dir="${lib.dir}" includes="**/*.jar" />
-				<pathelement location="${lib.dir}/log4j.jar" />
-				<pathelement location="${base.dir}/${jar.file}" />
+				<fileset dir="${libs.dir}" includes="**/*.jar" />
+				<pathelement location="${libs.dir}/log4j.jar" />
+				<pathelement location="${basedir}/${jar.file}" />
 			</classpath>
 		</javac>
 
@@ -282,11 +292,11 @@
 
 	<!-- Creates .tar and .tar.gz file for distribution -->
 	<target name="distribute" depends="clean" description="Creating .tar and .tar.gz file for distribution.">
-		<property name="tar.file" value="${base.dir}/${ant.project.name}_${distTimestamp}.tar" />
+		<property name="tar.file" value="${basedir}/${ant.project.name}_${distTimestamp}.tar" />
 		<property name="gz.file" value="${tar.file}.gz" />
 
 		<echo message="Creating distributable .tar and .tar.gz file(s)!" />
-		<tar destfile="${tar.file}" basedir="${base.dir}" excludes="build/**, classes/**, dest/**, *.tar, *.gz" />
+		<tar destfile="${tar.file}" basedir="${basedir}" excludes="build/**, classes/**, dest/**, *.tar, *.gz" />
 		<echo message="Created distributable '${tar.file}' file." />
 
 		<gzip destfile="${gz.file}" src="${tar.file}" />

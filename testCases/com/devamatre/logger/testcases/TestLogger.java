@@ -28,6 +28,7 @@
  *****************************************************************************/
 package com.devamatre.logger.testcases;
 
+import com.devamatre.logger.LogLevel;
 import com.devamatre.logger.LogManager;
 import com.devamatre.logger.LogUtility;
 import com.devamatre.logger.Logger;
@@ -41,7 +42,7 @@ import com.devamatre.logger.Logger;
  */
 public class TestLogger {
 
-	private static Logger logger;
+	private Logger logger;
 
 	/**
 	 * 
@@ -52,19 +53,19 @@ public class TestLogger {
 		// LogManager.configure(LogManager.LOG4J_XML_FILE);
 		LogManager.configure(LogManager.LOG4J_PROPERTY_FILE);
 		// LogManager.configure(true, LogEnum.WARN);
+		TestLogger testLogger = new TestLogger();
+		testLogger.testLogger(true);
+		testLogger.testLogger(false);
 
-		TestLogger.testLogger(true);
-		TestLogger.testLogger(false);
-
+		testLogger.testLoggerPackageTest();
 	}
 
 	/**
 	 * 
 	 * @param useNullLogger
 	 */
-	private static void testLogger(boolean useNullLogger) {
+	private void testLogger(boolean useNullLogger) {
 		LogUtility.debug("+testLogger(" + useNullLogger + ")");
-
 		// initialize logger.
 		logger = LogManager.getLogger((useNullLogger ? null : TestLogger.class));
 
@@ -93,8 +94,7 @@ public class TestLogger {
 		}
 
 		// loggerPackageTest
-		TestLoggerPackage loggerPackage = new TestLoggerPackage();
-		loggerPackage.testLoggerPackageTest();
+		testLoggerPackageTest();
 
 		try {
 			throwException();
@@ -104,13 +104,18 @@ public class TestLogger {
 
 		logger.info("-testLogger()");
 
+		logger.info("Starting TestLogUtility");
+		TestLogUtility logUtility = new TestLogUtility();
+		logUtility.test();
+		logger.info("Ended TestLogUtility");
+
 		LogUtility.debug("-testLogger()");
 	}
 
 	/**
 	 * 
 	 */
-	private static void messages() {
+	private void messages() {
 		logger.info("+messages");
 		logger.info("messages Method Call!");
 		messages1();
@@ -120,7 +125,7 @@ public class TestLogger {
 	/**
 	 * 
 	 */
-	private static void messages1() {
+	private void messages1() {
 		logger.info("+messages1");
 		logger.info("messages1 Method Call!");
 		messages2();
@@ -131,7 +136,7 @@ public class TestLogger {
 	/**
 	 * 
 	 */
-	private static void messages2() {
+	private void messages2() {
 		logger.info("+messages2");
 		logger.info("messages2 Method Call!");
 		logger.info("-messages2");
@@ -140,7 +145,7 @@ public class TestLogger {
 	/**
 	 * 
 	 */
-	private static void messages3() {
+	private void messages3() {
 		logger.info("+messages3");
 		logger.info("messages3 Method Call!");
 		logger.info("-messages3");
@@ -149,14 +154,14 @@ public class TestLogger {
 	/**
 	 * 
 	 */
-	private static void messages4() {
+	private void messages4() {
 		logger.info("messages4 Method Call!");
 	}
 
 	/**
 	 * 
 	 */
-	private static void messages5() {
+	private void messages5() {
 		logger.info("messages5 Method Call!");
 		messages3();
 		messages4();
@@ -167,7 +172,20 @@ public class TestLogger {
 	 * 
 	 * @throws Exception
 	 */
-	private static void throwException() throws Exception {
+	private void throwException() throws Exception {
 		throw new IllegalArgumentException("Exception Testing!");
+	}
+
+	/**
+	 * Test Logger Package.
+	 */
+	public void testLoggerPackageTest() {
+		// initialize logger.
+		logger = LogManager.getLogger(TestLogger.class);
+		logger.debug(LogLevel.DEBUG);
+		logger.info(LogLevel.INFO);
+		logger.warn(LogLevel.WARN);
+		logger.error(LogLevel.ERROR);
+		logger.fatal(LogLevel.FATAL);
 	}
 }

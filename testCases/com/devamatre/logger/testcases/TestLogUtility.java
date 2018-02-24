@@ -30,7 +30,10 @@ package com.devamatre.logger.testcases;
 
 import java.io.IOException;
 
+import com.devamatre.logger.LogLevel;
+import com.devamatre.logger.LogManager;
 import com.devamatre.logger.LogUtility;
+import com.devamatre.logger.Logger;
 
 /**
  * 
@@ -41,6 +44,9 @@ import com.devamatre.logger.LogUtility;
  * @since 1.0.0
  */
 public class TestLogUtility {
+
+	/** logger */
+	private static Logger logger = LogManager.getLogger(TestLogUtility.class);
 
 	/**
 	 * Starting Point.
@@ -54,14 +60,26 @@ public class TestLogUtility {
 		LogUtility.debug("Rohtash Singh Lakra");
 		LogUtility.printSystemProperties("System Properties", true);
 
-		// String[] myName = { "Rohtash", "Singh", "Lakra" };
-		// String[][] names = { myName, { "Harsh", "Lakra" } };
-		// LogUtility.print(myName, null, false);
-		// LogUtility.print();
-		// LogUtility.print(names, null, false);
-		// LogUtility.printLineWithHeading("Testing", '=', 10);
-		// LogUtility.printProperties();
+		LogManager.configure(LogManager.LOG4J_XML_FILE);
+		TestLogUtility testLogUtility = new TestLogUtility();
+		testLogUtility.test();
+	}
 
+	/**
+	 * 
+	 */
+	public void test() {
+		logger.info("+test()");
+		String[] myName = { "Rohtash", "Singh", "Lakra" };
+		logger.debug(myName);
+		String[][] names = { myName, { "Harsh", "Lakra" } };
+		logger.debug(names);
+		logger.debug(LogLevel.DEBUG);
+		logger.info(LogLevel.INFO);
+		logger.warn(LogLevel.WARN);
+		logger.error(LogLevel.ERROR);
+		logger.fatal(LogLevel.FATAL);
+		logger.info("-test()");
 	}
 
 }

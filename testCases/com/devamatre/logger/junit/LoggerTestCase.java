@@ -26,32 +26,73 @@
  * Devamatre reserves the right to modify the technical specifications and or 
  * features without any prior notice.
  *****************************************************************************/
-package com.devamatre.logger.testcases;
+package com.devamatre.logger.junit;
 
 import com.devamatre.logger.LogLevel;
-import com.devamatre.logger.LogManager;
 import com.devamatre.logger.Logger;
+import com.devamatre.logger.mock.MockLogManager;
 
 /**
  * @author Rohtash Lakra (rohtash.lakra@devamatre.com)
  * @author Rohtash Singh Lakra (rohtash.singh@gmail.com)
- * @created 2011-05-10 2:51:50 PM
+ * @created 2009-08-09 2:51:50 PM
  * @version 1.0.0
  * @since 1.0.0
  */
-public class TestLoggerPackage {
+public class LoggerTestCase extends AbstractTestCase {
 
 	/** logger */
-	private static Logger logger = LogManager.getLogger(TestLoggerPackage.class);
+	private static Logger logger = MockLogManager.getLogger(LoggerTestCase.class);
 
 	/**
-	 * Test Logger Package.
+	 * 
 	 */
-	public void testLoggerPackageTest() {
-		logger.debug(LogLevel.DEBUG);
-		logger.info(LogLevel.INFO);
-		logger.warn(LogLevel.WARN);
-		logger.error(LogLevel.ERROR);
-		logger.fatal(LogLevel.FATAL);
+	public void testFatal() {
+		logger.fatal(LogLevel.FATAL.toString());
+		assertTrue("FATAL Error!", "FATAL".equals(LogLevel.FATAL.toString()));
+	}
+
+	/**
+	 * 
+	 */
+	public void testError() {
+		logger.error(LogLevel.ERROR.toString());
+		assertTrue("ERROR Error!", "ERROR".equals(LogLevel.ERROR.toString()));
+	}
+
+	/**
+	 * 
+	 */
+	public void testWarn() {
+		logger.error(LogLevel.WARN.toString());
+		assertTrue("WARN Error!", "WARN".equals(LogLevel.WARN.toString()));
+	}
+
+	/**
+	 * 
+	 */
+	public void testInfo() {
+		logger.error(LogLevel.INFO.toString());
+		assertTrue("INFO Error!", "INFO".equals(LogLevel.INFO.toString()));
+	}
+
+	/**
+	 * 
+	 */
+	public void testDebug() {
+		logger.error(LogLevel.DEBUG.toString());
+		assertTrue("DEBUG Error!", "DEBUG".equals(LogLevel.DEBUG.toString()));
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		LoggerTestCase ltc = new LoggerTestCase();
+		ltc.testDebug();
+		ltc.testError();
+		ltc.testFatal();
+		ltc.testInfo();
+		ltc.testWarn();
 	}
 }
