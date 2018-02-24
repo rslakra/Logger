@@ -1,116 +1,196 @@
-<?xml version="1.0"?>
-<!-- ==================================================== -->
-<!-- Build file, to compile Logger and create it's jar file. -->
-<!-- build.xml -->
-<!-- Author: Rohtash Singh  -->
-<!-- Email : rohtash.singh@gmail.com -->
-<!-- Url : http:// -->
-<!-- ==================================================== -->
-<!-- This simple ant build file is intended to support compiling the java portion of thick client using ant. -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/******************************************************************************
+ * Copyright (C) Devamatre Inc. 2009-2018. All rights reserved.
+ * 
+ * This code is licensed to Devamatre under one or more contributor license 
+ * agreements. The reproduction, transmission or use of this code, in source 
+ * and binary forms, with or without modification, are permitted provided 
+ * that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright
+ * 	  notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *      
+ * Devamatre reserves the right to modify the technical specifications and or 
+ * features without any prior notice.
+ *****************************************************************************/
+-->
+<!--
+/******************************************************************************
+ * Module		: Ant Build Script
+ * Author		: Rohtash Lakra (rohtash.lakra@devamatre.com)
+ * Author		: Rohtash Singh Lakra (rohtash.singh@gmail.com)
+ * Created On	: 2009-08-09 2:51:50 PM
+ * Updated On	: 2009-08-09 2:51:50 PM
+ * Version		: 1.0.1
+ * Since		: 1.0.0
+ * 
+ * NOTE: -
+ * The target defined in this build process are self-explanatory. The more 
+ * details or information about each target is provided with the defination of 
+ * target.
+ *
+ * The cotents of this file should not be modified if there are not change in 
+ * the structure of the project. But if the structure changes, the target 
+ * should be udpated as per the structure changes.
+ *****************************************************************************/
+ -->
+<project name="dLogger" default="all" basedir=".">
+	<echo />
+	<echo message="Building '${ant.project.name}' Project ..." />
 
-<project name="Logger" default="all" basedir=".">
-	<!-- Base Structure -->
-	<property name="base.dir" value="${basedir}"/>
-	<property name="src.dir" value="${base.dir}/src"/>
-	<property name="testCases.dir" value="${base.dir}/TestCases"/>
+	<!-- set date & time properties to use later -->
+	<property name="nowPattern" value="EEE, MMM dd, yyyy HH:mm:ss" />
+	<tstamp>
+		<format property="NOW" pattern="${nowPattern}" />
+		<format property="distTimestamp" pattern="yyyyMMMddEEEHHmmss" />
+	</tstamp>
+	<echo message="Build Process started at '${NOW}'" />
+	<echo />
+
+	<!-- display splash screen -->
+	<splash progressRegExp="Progress: (.*)%" showduration="10" displayText="Building ${ant.project.name} ..." />
+
+	<!-- build.properties file inclusion. -->
+	<property file="${basedir}/build.properties" />
+
+	<!-- Basic Structure Settings -->
+	<property name="base.dir" value="${basedir}" />
+	<property name="src.dir" value="${base.dir}/src" />
+	<property name="jar.file" value="${ant.project.name}-v${impl-version}.jar" />
+	<property name="zip.file" value="${ant.project.name}.zip" />
 
 	<!-- Libraries -->
-	<property name="libs.dir" value="${base.dir}/libs"/>
-	<property name="path.junit.jar" value="${libs.dir}/junit/junit-3.8.1.jar"/>
+	<property name="lib.dir" value="${base.dir}/libs" />
 
 	<!-- Build Paths -->
-	<property name="build.dir" value="${base.dir}/build"/>
-	<property name="classes.dir" value="${build.dir}/classes"/>
-	<property name="jars.dir" value="${build.dir}/jars"/>
-	<property name="testCases.classes.dir" value="${build.dir}/testCases.classes"/>
-	<property name="unittest.results.dir" value="${build.dir}/unittest.results"/>
+	<property name="build.dir" value="${base.dir}/build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
 
-	<!-- Jar File Name -->
-	<property name="jarFile" value="${ant.project.name}.jar"/>
-	<property name="client.main" value="com.rslakra.junit.logger.TestLogger"/>
-	<property name="junittest.main" value="com.rslakra.junit.logger.LoggerTestCase"/>
-
-	<!--Show Messages as Required.-->
-	<echo message="-------------------------------------------------------------"/>
-	<echo message="Compliling Project : ${ant.project.name} ${line.separator}"/>
-	<echo message="-------------------------------------------------------------"/>
+	<!-- TestCase Settings -->
+	<property name="tcSrc.dir" value="${base.dir}/TestCases" />
+	<property name="testcases.results.dir" value="${build.dir}/testcases-results" />
 
 	<!-- Create Targets -->
-
-	<!-- class path -->
-	<path id="third.party.jars">
-		<fileset dir="${libs.dir}" includes="**/*.jar"/>
-		<fileset dir="${libs.dir}/junit" includes="**/*.jar"/>
+	<!-- Build CLASSPATH Settings -->
+	<path id="build.classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
 	</path>
+
+	<!-- = = = = = = = = = = = = = = = = =
+	macrodef: echopath
+	= = = = = = = = = = = = = = = = = -->
+	<macrodef name="echopath">
+		<attribute name="pathid" />
+		<sequential>
+			<property name="line.pathprefix" value="|-- " />
+			<!-- get given path in a printable form -->
+			<pathconvert pathsep="${line.separator}${line.pathprefix}" property="echo.@{pathid}" refid="@{pathid}">
+			</pathconvert>
+			<echo />
+			<echo message="Path '@{pathid}'" />
+			<echo message="${line.pathprefix}${echo.@{pathid}}" />
+		</sequential>
+	</macrodef>
+
+	<echopath pathid="build.classpath" />
+	<echo />
+
+	<!-- create a property containing all .jar files, 
+		 prefix lib/, and seperated with a space -->
+	<pathconvert property="lib.classpath" pathsep=" ">
+		<mapper>
+			<chainedmapper>
+				<!-- remove absolute path -->
+				<flattenmapper />
+				<globmapper from="*" to="*" />
+			</chainedmapper>
+		</mapper>
+		<path>
+			<fileset dir="${lib.dir}" includes="**/*.jar" />
+		</path>
+	</pathconvert>
 
 	<!-- Default Target -->
 	<target name="all" description="Default Target" depends="clean, build" />
+	<target name="runClient" description="Default Target" depends="clean, build, run.client" />
+	<target name="runTestCases" description="Default Target" depends="clean, build, run.testcases" />
 
 	<!-- Remove /build Directory and its sub-directories... -->
 	<target name="clean" description="Removing Directories...">
-		<delete dir="${build.dir}"/>
-		<delete file="${base.dir}/${jarFile}"/>
+		<delete dir="${build.dir}" />
+		<delete dir="${deploy.dir}" />
+		<delete file="${base.dir}/dLogs.log" />
+		<delete file="${base.dir}/result.txt" />
+		<delete file="${base.dir}/result.xml" />
 	</target>
 
 	<!-- Creates Directories.... -->
 	<target name="init">
-		<mkdir dir="${classes.dir}"/>
-		<mkdir dir="${jars.dir}"/>
+		<mkdir dir="${classes.dir}" />
 	</target>
 
-	<!-- Compile Java Files and store in /build/classes directory -->
-	<target name="compile" depends="init">
-		<!--javac srcdir="${src}" destdir="${classdir}" debug="true" includes="**/*.java" /-->
-		<!--javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" includes="**/*.java">
-			<classpath>
-				<pathelement location="${libs.dir}/log4j.jar"/>
-			</classpath>
-		</javac-->
-		<javac fork="${javac.fork}"
-			srcdir="${src.dir}"
-			destdir="${classes.dir}"
-            debug="true"
-			listfiles="true"
-			failonerror="true"
-			includeantruntime="false"
-			classpathref="third.party.jars" />
-
-
-		<!-- Create logger jar file and put in /build/jars directory -->
-		<!--jar jarfile="${jars.dir}/${jarFile}" basedir="${classes.dir}"/ -->
-		<jar destfile="${jars.dir}/${jarFile}">
-			<fileset dir="${classes.dir}" includes="**" />
-			<fileset dir="${base.dir}" includes="log4j.properties, dLog4j.properties" />
-			<!--fileset dir="${base.dir}" includes="Libs/*" /-->
-			<!-- MANIFEST.MF Properties -->
-			<manifest>
-				<attribute name="Built-By" value="Rohtash Singh" />
-				<section name="Vendor Details">
-					<attribute name="Specification-Title" value="Logger" />
-					<attribute name="Specification-Vendor" value="RSLakra Inc" />
-					<attribute name="Implementation-Title" value="Logger" />
-					<attribute name="Implementation-Vendor" value="www.devamatre.com" />
-				</section>
-			</manifest>
-		</jar>
-
-		<!--antcall target=""/-->
+	<!-- Compiles all .java classes under the build folder. -->
+	<target name="compile" depends="init" description="Compiling .java files">
+		<echo message="Compiling '${src.dir}' into '${build.dir}'" />
+		<javac fork="${javac.fork}" srcdir="${src.dir}" destdir="${classes.dir}" optimize="${javac.optimize}" debug="${javac.debug}" debuglevel="${javac.debug.level}" listfiles="${javac.listfiles}" includeantruntime="false" source="${javac.source}" target="${javac.target}" classpathref="build.classpath" />
 	</target>
 
 	<!-- Copies Logger.jar file into /../Libs Directory. -->
 	<target name="build" depends="compile">
-		<!-- Overwrite existing files even if the destination files are newer. -->
-		<copy todir="${base.dir}" overwrite="true">
-			<fileset dir="${jars.dir}" includes="${jarFile}" />
-		</copy>
+		<!-- Create logger jar file and put in /deploy.dir/ directory -->
+		<mkdir dir="${deploy.dir}" />
+		<jar destfile="${deploy.dir}/${jar.file}">
+			<fileset dir="${classes.dir}" includes="**" />
+			<fileset dir="${base.dir}" includes="log4j.properties, dLog4j.properties, dLog4j.xml" />
+
+			<!-- MANIFEST.MF Properties -->
+			<manifest>
+				<attribute name="Built-By" value="${built-by}" />
+				<section name="Vendor Details">
+					<attribute name="Implementation-Title" value="${ant.project.name}" />
+					<attribute name="Implementation-Vendor" value="${impl-vendor}" />
+					<attribute name="Implementation-Vendor-Id" value="${impl-vendor-id}" />
+					<attribute name="Implementation-Version" value="v${impl-version} ${TODAY}" />
+					<attribute name="Specification-Title" value="${ant.project.name}" />
+					<attribute name="Specification-Vendor" value="${impl-vendor}" />
+					<attribute name="Specification-Version" value="v${impl-version}" />
+				</section>
+			</manifest>
+		</jar>
+
+		<!-- copy dLogger jar file into base directory -->
+		<copy file="${deploy.dir}/${jar.file}" todir="${base.dir}" overwrite="true" />
+
+		<tstamp>
+			<format property="NOW" pattern="${nowPattern}" />
+			<format property="distTimestamp" pattern="yyyyMMMddEEEHHmmss" />
+		</tstamp>
+		<echo message="Build Succeeded at '${NOW}'" />
 	</target>
 
 	<!-- the target that runs the client/test -->
-	<target name="run.client">
-		<java fork="true" classname="${client.main}">
+	<target name="run.client" depends="compile.unittest">
+		<java fork="true" classname="${client.main-class}">
 			<classpath>
-				<pathelement location="${libs.dir}/log4j.jar"/>
-				<pathelement location="${base.dir}/${jarFile}"/>
+				<pathelement path="${lib.dir}/log4j-1.2.17.jar" />
+				<pathelement path="${lib.dir}/junit_3.8.1.jar" />
+				<pathelement path="${classes.dir}" />
+				<pathelement location="${base.dir}/${jar.file}" />
 			</classpath>
 		</java>
 		<!--java fork="true" classname="${client.main}">
@@ -126,47 +206,45 @@
 	</target>
 
 	<!-- Unit Test Cases Targets -->
-	<!--target name="run.unittest" depends="compile.unittest" description="Runs JUnit Test Cases"-->
-	<target name="run.unittests" depends="build" description="Runs JUnit Test Cases">
-	    <!-- Ensure that the 'junit.jar' file is in the ${ant.home}/lib directory
-	    prior to forking in order for it to be found within same classloader
-	    as ANT task -->
-	    <!-- There MUST be a better way to do this! -->
-	    <copy file="${path.junit.jar}/junit.jar" tofile="${ant.home}/lib/junit.jar"/>
-		<mkdir dir="${unittest.results.dir}"/>
+	<target name="run.testcases" depends="compile.unittest" description="Runs JUnit Test Cases">
+		<!-- Ensure that the 'junit.jar' file is in the ${ant.home}/lib 
+		directory prior to forking in order for it to be found within same 
+		classloader as ANT task -->
+		<!-- There MUST be a better way to do this! -->
+		<copy file="${lib.dir}/junit_3.8.1.jar" tofile="${ant.home}/lib/junit.jar" />
+		<mkdir dir="${testcases.results.dir}" />
 		<junit fork="yes" printsummary="yes" haltonfailure="no">
-	      	<classpath>
-				<pathelement path="${libs.dir}/log4j.jar"/>
-	        	<pathelement path="${libs.dir}/junit/junit-3.8.1.jar"/>
-	        	<pathelement path="${classes.dir}"/>
-	        	<pathelement path="${base.dir}/${jarFile}"/>
-	      	</classpath>
-			<formatter type="plain"/>
+			<classpath>
+				<pathelement path="${lib.dir}/log4j-1.2.17.jar" />
+				<pathelement path="${lib.dir}/junit_3.8.1.jar" />
+				<pathelement path="${classes.dir}" />
+				<pathelement location="${base.dir}/${jar.file}" />
+			</classpath>
+			<formatter type="plain" />
 
-			<test name="${junittest.main}" haltonfailure="no" outfile="result">
-				<formatter type="xml"/>
+			<test name="${junit.main-class}" haltonfailure="no" outfile="result">
+				<formatter type="xml" />
 			</test>
 
-	      	<batchtest haltonfailure="false" todir="${unittest.results.dir}">
-	        	<fileset dir="${classes.dir}">
-					<include name="mclient/**/*TestCase.class"/>
+			<batchtest haltonfailure="false" todir="${testcases.results.dir}">
+				<fileset dir="${classes.dir}">
+					<include name="**/*TestCase.class" />
 					<!--exclude name="**/AllTests.java"/-->
-	        	</fileset>
-	      	</batchtest>
+				</fileset>
+			</batchtest>
 		</junit>
 	</target>
 
 	<!-- Compile Java Files and store in /build/classes directory -->
-	<target name="compile.unittest">
-		<mkdir dir="${testCases.classes.dir}"/>
-		<javac srcdir="${testCases.dir}" destdir="${testCases.classes.dir}" debug="true" includes="**/*.java">
+	<target name="compile.unittest" depends="build">
+		<javac srcdir="${tcSrc.dir}" destdir="${classes.dir}" debug="true" includes="**/*.java">
 			<classpath>
-				<fileset dir="${testCases.classes.dir}">
-					<include name="**/*TestCase.class"/>
-	        	</fileset>
-				<fileset dir="${libs.dir}" includes="**/*.jar"/>
-				<pathelement location="${libs.dir}/log4j.jar"/>
-				<pathelement location="${base.dir}/${jarFile}"/>
+				<fileset dir="${classes.dir}">
+					<include name="**/*TestCase.class" />
+				</fileset>
+				<fileset dir="${lib.dir}" includes="**/*.jar" />
+				<pathelement location="${lib.dir}/log4j.jar" />
+				<pathelement location="${base.dir}/${jar.file}" />
 			</classpath>
 		</javac>
 
@@ -176,7 +254,51 @@
 	<!-- Create Source Jar File in base directory -->
 	<target name="source.jar">
 		<echo message="Creating Source Jar file ..." />
-		<delete file="${basedir}/src.jar"/>
+		<delete file="${basedir}/src.jar" />
 		<jar jarfile="${basedir}/src.jar" basedir="${basedir}/src" manifest="${basedir}/src/META-INF/MANIFEST.MF" update="true" />
 	</target>
+
+	<!-- Create Zip file of dLogger under "../../Backups/" folder -->
+	<target name="${basedir}/${zip.file}">
+		<echo message="Creating backup file '${basedir}/${zip.file}' ..." />
+		<delete file="${basedir}/${zip.file}" />
+		<!--jar jarfile="${backup.dir}/${backup.file}" basedir="${basedir}/../${ant.project.name}" update="true" /-->
+		<jar destfile="${basedir}/${zip.file}" update="true">
+			<fileset dir="${basedir}/../${ant.project.name}" includes="**" excludes="dLogger.zip" />
+			<manifest>
+				<attribute name="Built-By" value="Rohtash Singh" />
+				<section name="Vendor Details">
+					<attribute name="Implementation-Title" value="${ant.project.name}" />
+					<attribute name="Implementation-Vendor" value="${impl-vendor}" />
+					<attribute name="Implementation-Vendor-Id" value="${impl-vendor-id}" />
+					<attribute name="Implementation-Version" value="v${impl-version} ${TODAY}" />
+					<attribute name="Specification-Title" value="${ant.project.name}" />
+					<attribute name="Specification-Vendor" value="${impl-vendor}" />
+					<attribute name="Specification-Version" value="v${impl-version}" />
+				</section>
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- Creates .tar and .tar.gz file for distribution -->
+	<target name="distribute" depends="clean" description="Creating .tar and .tar.gz file for distribution.">
+		<property name="tar.file" value="${base.dir}/${ant.project.name}_${distTimestamp}.tar" />
+		<property name="gz.file" value="${tar.file}.gz" />
+
+		<echo message="Creating distributable .tar and .tar.gz file(s)!" />
+		<tar destfile="${tar.file}" basedir="${base.dir}" excludes="build/**, classes/**, dest/**, *.tar, *.gz" />
+		<echo message="Created distributable '${tar.file}' file." />
+
+		<gzip destfile="${gz.file}" src="${tar.file}" />
+		<echo message="Created distributable '${gz.file}' file." />
+		<echo />
+
+		<tstamp>
+			<format property="NOW" pattern="${nowPattern}" />
+		</tstamp>
+		<echo />
+		<echo message="Source distribution ended successfully at '${NOW}'!" />
+		<echo />
+	</target>
+
 </project>
