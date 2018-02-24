@@ -29,11 +29,11 @@
 package com.devamatre.logger;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Writer;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
@@ -510,32 +510,21 @@ public final class LogUtility {
 	}
 
 	/**
-	 * Closes the specified <code>writer</code> writer, if it's not null;
+	 * Closes the specified <code>closeable</code> object.
 	 * 
-	 * @param writer
+	 * @param closeable
 	 */
-	public static void close(Writer writer) {
-		// close outputStream
-		if (writer != null) {
+	public static void safeClose(Object closeable) {
+		if (closeable != null) {
 			try {
-				writer.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * Closes the specified <code>outputStream</code> stream, if it's not null;
-	 * 
-	 * @param outputStream
-	 */
-	public static void close(OutputStream outputStream) {
-		// close outputStream
-		if (outputStream != null) {
-			try {
-				outputStream.close();
-			} catch (IOException ex) {
+				if (closeable instanceof Closeable) {
+					((Closeable) closeable).close();
+				} else if (closeable instanceof Socket) {
+					((Socket) closeable).close();
+				} else if (closeable instanceof ServerSocket) {
+					((ServerSocket) closeable).close();
+				}
+			} catch (Throwable ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -548,7 +537,7 @@ public final class LogUtility {
 	 * @param throwable
 	 * @return
 	 */
-	public static String stackTraceAsString(Throwable throwable) {
+	public static String toString(Throwable throwable) {
 		ByteArrayOutputStream outputStream = null;
 		PrintWriter printWriter = null;
 		try {
@@ -560,9 +549,9 @@ public final class LogUtility {
 			error("Error converting stack trace to string.", throwable);
 		} finally {
 			// close writer
-			close(printWriter);
+			safeClose(printWriter);
 			// close outputStream
-			close(outputStream);
+			safeClose(outputStream);
 		}
 
 		return new String(outputStream.toByteArray());
