@@ -44,10 +44,10 @@ import com.devamatre.logger.Logger;
  * @since 1.0.0
  */
 public class TestLogUtility {
-
+	
 	/** logger */
 	private static Logger logger = LogManager.getLogger(TestLogUtility.class);
-
+	
 	/**
 	 * Starting Point.
 	 * 
@@ -58,13 +58,15 @@ public class TestLogUtility {
 		LogUtility.setDebugEnabled(true);
 		LogUtility.printSystemProperties(false);
 		LogUtility.debug("Rohtash Singh Lakra");
+		LogUtility.info("Lakra");
+		LogUtility.warn("Singh");
 		LogUtility.printSystemProperties("System Properties", true);
-
+		
 		LogManager.configure(LogManager.LOG4J_XML_FILE);
 		TestLogUtility testLogUtility = new TestLogUtility();
 		testLogUtility.test();
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -81,5 +83,5 @@ public class TestLogUtility {
 		logger.fatal(LogLevel.FATAL);
 		logger.info("-test()");
 	}
-
+	
 }

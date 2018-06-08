@@ -58,7 +58,7 @@ import org.apache.log4j.helpers.OptionConverter;
  * @since 1.0.0
  */
 public final class LogUtility {
-
+	
 	/**
 	 * Defining this value makes log4j print log4j-internal debug statements to
 	 * <code>System.out</code>.
@@ -70,178 +70,237 @@ public final class LogUtility {
 	 * Note that the search for all option names is case sensitive.
 	 */
 	public static final String DEBUG_KEY = "log4j.debug".intern();
-
+	
 	/** LINE_SEPARATOR */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator").intern();
-
+	
 	/** USER_HOME */
 	public static final String USER_HOME = System.getProperty("user.home").intern();
-
+	
 	/** USER_DIR */
 	public static final String USER_DIR = System.getProperty("user.dir").intern();
-
+	
 	/** OS_NAME */
 	public static final String OS_NAME = System.getProperty("os.name").intern();
-
+	
 	/** OS_VERSION */
 	public static final String OS_VERSION = System.getProperty("os.version").intern();
-
+	
 	/** FILE_SEPARATOR */
 	public static final String FILE_SEPARATOR = System.getProperty("file.separator").intern();
-
+	
 	/** HTAB - Insert a tab in the text at this point. */
 	public static final String HTAB = "\t".intern();
-
+	
 	/** BACKSPACE - Insert a backspace in the text at this point. */
 	public static final String BACKSPACE = "\b".intern();
-
+	
 	/** NEWLINE - Insert a newline in the text at this point. */
 	public static final String NEWLINE = "\n".intern();
-
+	
 	/** CARRIAGE_RETURN - Insert a carriage return in the text at this point. */
 	public static final String CARRIAGE_RETURN = "\r".intern();
-
+	
 	/** FORM_FEED - Insert a formfeed in the text at this point. */
 	public static final String FORM_FEED = "\f".intern();
-
+	
 	/**
 	 * SINGLE_QUOTE - Insert a single quote character in the text at this point.
 	 */
 	public static final String SINGLE_QUOTE = "\'".intern();
-
+	
 	/**
 	 * DOUBLE_QUOTE - Insert a double quote character in the text at this point.
 	 */
 	public static final String DOUBLE_QUOTE = "\"".intern();
-
+	
 	/** BACKSLASH - Insert a backslash character in the text at this point. */
 	public static final String BACKSLASH = "\\".intern();
-
+	
 	/** SPACE */
 	public static final String SPACE = " ".intern();
-
-	/** debugEnabled */
-	private static boolean debugEnabled = false;
-
-	/** logEnabled */
-	private static boolean logEnabled = true;
-
-	/** consoleEnabled */
-	private static boolean consoleEnabled = true;
-
+	
+	/** <code>sDebugEnabled</code> */
+	private static boolean sDebugEnabled = false;
+	
+	/** <code>sLogEnabled</code> */
+	private static boolean sLogEnabled = true;
+	
+	/** <code>sConsoleEnabled</code> */
+	private static boolean sConsoleEnabled = true;
+	
 	/**
-	 * The disableAll suppresses the logging of all the logs including errors.
+	 * The <code>sDisableAll</code> suppresses the logging of all the logs
+	 * including errors.
 	 */
-	private static boolean disableAll = false;
-
-	private static final String PREFIX = "LogUtility:log4j:".intern();
-	private static final String ERROR = PREFIX + "ERROR ".intern();
-	private static final String WARN = PREFIX + "WARN ".intern();
-
+	private static boolean sDisableAll = false;
+	
+	/**
+	 * LOG PREFIXES.
+	 */
+	private static final String PREFIX = "LogUtility:";
+	
 	static {
-		String keyLog4jDebug = OptionConverter.getSystemProperty(DEBUG_KEY, null);
+		final String keyLog4jDebug = OptionConverter.getSystemProperty(DEBUG_KEY, null);
 		if (!isNullOrEmpty(keyLog4jDebug)) {
-			LogUtility.debugEnabled = OptionConverter.toBoolean(keyLog4jDebug, true);
+			setDebugEnabled(OptionConverter.toBoolean(keyLog4jDebug, true));
 		}
 	}
-
+	
 	// /////////////////////////////////////////////////////////////////////////
 	// ////////////////////// GETTER/SETTER METHODS ////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
-
+	
+	/**
+	 * Returns the <code>sDebugEnabled</code> value.
+	 * 
+	 * @return
+	 */
+	public static boolean isDebugEnabled() {
+		return sDebugEnabled;
+	}
+	
 	/**
 	 * Allows to enable/disable log4j internal logging.
 	 * 
 	 * @param debugEnabled
 	 */
-	public static void setDebugEnabled(boolean debugEnabled) {
-		LogUtility.debugEnabled = debugEnabled;
+	public static void setDebugEnabled(final boolean debugEnabled) {
+		sDebugEnabled = debugEnabled;
 	}
-
+	
+	/**
+	 * Returns the <code>sDisableAll</code> value.
+	 * 
+	 * @return
+	 */
+	public static boolean isDisableAll() {
+		return sDisableAll;
+	}
+	
 	/**
 	 * In disableAll mode, all the logs are suppresses strictly no output, not
 	 * even for errors.
 	 * 
 	 * @param disableAll
 	 */
-	public static void setDisableAll(boolean disableAll) {
-		LogUtility.disableAll = disableAll;
+	public static void setDisableAll(final boolean disableAll) {
+		sDisableAll = disableAll;
 	}
-
+	
 	/**
-	 * Returns the logEnabled.
+	 * Returns the <code>sLogEnabled</code> value.
 	 * 
 	 * @return
 	 */
 	public static boolean isLogEnabled() {
-		return logEnabled;
+		return sLogEnabled;
 	}
-
+	
 	/**
-	 * The logEnabled to be set.
+	 * The <code>sLogEnabled</code> to be set.
 	 * 
 	 * @param logEnabled
 	 */
-	public static void setLogEnabled(boolean logEnabled) {
-		LogUtility.logEnabled = logEnabled;
+	public static void setLogEnabled(final boolean logEnabled) {
+		sLogEnabled = logEnabled;
 	}
-
+	
 	/**
-	 * Returns the consoleEnabled.
+	 * Returns the <code>sConsoleEnabled</code> value.
 	 * 
 	 * @return
 	 */
 	public static boolean isConsoleEnabled() {
-		return consoleEnabled;
+		return sConsoleEnabled;
 	}
-
+	
 	/**
-	 * The consoleEnabled to be set.
+	 * The <code>sConsoleEnabled</code> to be set.
 	 * 
 	 * @param consoleEnabled
 	 */
-	public static void setConsoleEnabled(boolean consoleEnabled) {
-		LogUtility.consoleEnabled = consoleEnabled;
+	public static void setConsoleEnabled(final boolean consoleEnabled) {
+		sConsoleEnabled = consoleEnabled;
 	}
-
+	
 	// /////////////////////////////////////////////////////////////////////////
 	// //////////////////////// PRIVATE METHODS ////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
-
+	
+	/**
+	 * Returns the loggable message string.
+	 * 
+	 * @param message
+	 * @param message
+	 * @param throwable
+	 * @return
+	 */
+	private static String toLogString(final String logPrefix, final String message, final Throwable throwable) {
+		final StringBuilder logStringBuilder = new StringBuilder();
+		if (isNotNullOrEmpty(logPrefix)) {
+			logStringBuilder.append(logPrefix);
+		}
+		
+		if (isNotNullOrEmpty(message)) {
+			logStringBuilder.append(message);
+		}
+		
+		if (isNotNull(throwable)) {
+			logStringBuilder.append(NEWLINE);
+			logStringBuilder.append(throwable.getLocalizedMessage());
+			logStringBuilder.append(NEWLINE);
+			logStringBuilder.append(toString(throwable));
+		}
+		
+		return logStringBuilder.toString();
+	}
+	
 	// /////////////////////////////////////////////////////////////////////////
 	// ///////////////////////// PUBLIC METHODS ////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
-
+	
 	/**
 	 * Returns true if the object is null otherwise false.
 	 * 
 	 * @param object
 	 * @return
 	 */
-	public static boolean isNull(Object object) {
+	public static boolean isNull(final Object object) {
 		return (object == null);
 	}
-
+	
 	/**
 	 * Returns true if the object is not null otherwise false.
 	 * 
 	 * @param object
 	 * @return
 	 */
-	public static boolean isNotNull(Object object) {
+	public static boolean isNotNull(final Object object) {
 		return (!isNull(object));
 	}
-
+	
 	/**
-	 * Returns true if the string is null or empty otherwise false.
+	 * Returns true if the <code>string</code> is null or empty otherwise false.
 	 * 
 	 * @param string
+	 * @return
 	 */
-	public static boolean isNullOrEmpty(CharSequence charSequence) {
-		return (isNull(charSequence) || charSequence.toString().isEmpty()
-				|| charSequence.toString().trim().length() == 0);
+	public static boolean isNullOrEmpty(final CharSequence string) {
+		return (isNull(string) || string.toString().isEmpty() || string.toString().trim().length() == 0);
 	}
-
+	
+	/**
+	 * Returns true if the <code>string</code> is neither null nor empty
+	 * otherwise false.
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public static boolean isNotNullOrEmpty(final CharSequence string) {
+		return (!isNullOrEmpty(string));
+	}
+	
 	/**
 	 * Returns the name of the package of the specified <code>Class<?></code>
 	 * class as string. If the <code>packageNameAsDirPath</code> is true, the
@@ -249,107 +308,110 @@ public final class LogUtility {
 	 * character.
 	 * 
 	 * @param klass
+	 * @param packageNameAsDirPath
 	 * @return
 	 */
-	public static String getPackageName(Class<?> klass, boolean packageNameAsDirPath) {
+	public static String getPackageName(final Class<?> klass, final boolean packageNameAsDirPath) {
 		String packageName = (isNotNull(klass) ? klass.getPackage().getName() : null);
-		packageName = (packageNameAsDirPath && !isNullOrEmpty(packageName) ? packageName.replace(".", File.separator)
-				: packageName);
-
+		packageName = (packageNameAsDirPath && !isNullOrEmpty(packageName) ? packageName.replace(".", File.separator) : packageName);
+		
 		return packageName;
 	}
-
+	
 	/**
 	 * Returns the name of the package of the specified class as string.
 	 * 
 	 * @param klass
 	 * @return
 	 */
-	public static String getPackageName(Class<?> klass) {
+	public static String getPackageName(final Class<?> klass) {
 		return getPackageName(klass, false);
 	}
-
+	
 	/**
-	 * This method is used to output log4j internal debug statements. Output
-	 * goes to <code>System.out</code>.
+	 * Logs the internal debug logs of this logger to <code>System.out</code>.
 	 * 
 	 * @param message
 	 */
-	public static void debug(String message) {
+	public static void debug(final String message) {
 		debug(message, null);
 	}
-
+	
 	/**
-	 * This method is used to output log4j internal debug statements. Output
-	 * goes to <code>System.out</code>.
+	 * Logs the internal debug logs of this logger to <code>System.out</code>.
 	 * 
 	 * @param message
 	 * @param throwable
 	 */
-	public static void debug(String message, Throwable throwable) {
-		if (debugEnabled && !disableAll) {
-			System.out.println(PREFIX + message);
-			if (null != throwable) {
-				throwable.printStackTrace();
-			}
+	public static void debug(final String message, final Throwable throwable) {
+		if (isDebugEnabled() && !isDisableAll()) {
+			System.out.println(toLogString(LogLevel.DEBUG.logPrefixString(PREFIX), message, throwable));
 		}
 	}
-
+	
 	/**
-	 * This method is used to output log4j internal error statements. There is
-	 * no way to disable error statements. Output goes to
-	 * <code>System.err</code>.
+	 * Logs the internal info logs of this logger to <code>System.out</code>.
 	 * 
 	 * @param message
 	 */
-	public static void error(String message) {
-		error(message, null);
+	public static void info(final String message) {
+		info(message, null);
 	}
-
+	
 	/**
-	 * This method is used to output log4j internal error statements. There is
-	 * no way to disable error statements. Output goes to
-	 * <code>System.err</code>.
+	 * Logs the internal info logs of this logger to <code>System.out</code>.
 	 * 
 	 * @param message
 	 * @param throwable
 	 */
-	public static void error(String message, Throwable throwable) {
-		if (!disableAll) {
-			System.err.println(ERROR + message);
-			if (null != throwable) {
-				throwable.printStackTrace();
-			}
+	public static void info(final String message, final Throwable throwable) {
+		if (!isDisableAll()) {
+			System.out.println(toLogString(LogLevel.INFO.logPrefixString(PREFIX), message, throwable));
 		}
 	}
-
+	
 	/**
-	 * This method is used to output log4j internal warning statements. There is
-	 * no way to disable warning statements. Output goes to
-	 * <code>System.err</code>.
+	 * Logs the internal warn logs of this logger to <code>System.out</code>.
 	 * 
 	 * @param message
 	 */
-	public static void warn(String message) {
+	public static void warn(final String message) {
 		warn(message, null);
 	}
-
+	
 	/**
-	 * This method is used to output log4j internal warnings. There is no way to
-	 * disable warning statements. Output goes to <code>System.err</code>.
+	 * Logs the internal warn logs of this logger to <code>System.out</code>.
 	 * 
 	 * @param message
 	 * @param throwable
 	 */
-	public static void warn(String message, Throwable throwable) {
-		if (!disableAll) {
-			System.err.println(WARN + message);
-			if (null != throwable) {
-				throwable.printStackTrace();
-			}
+	public static void warn(final String message, final Throwable throwable) {
+		if (!isDisableAll()) {
+			System.out.println(toLogString(LogLevel.WARN.logPrefixString(PREFIX), message, throwable));
 		}
 	}
-
+	
+	/**
+	 * Logs the internal error logs of this logger to <code>System.err</code>.
+	 * Even if you have disabled all the logs, the error logs are always logged.
+	 * 
+	 * @param message
+	 */
+	public static void error(final String message) {
+		error(message, null);
+	}
+	
+	/**
+	 * Logs the internal error logs of this logger to <code>System.err</code>.
+	 * Even if you have disabled all the logs, the error logs are always logged.
+	 * 
+	 * @param message
+	 * @param throwable
+	 */
+	public static void error(final String message, final Throwable throwable) {
+		System.err.println(toLogString(LogLevel.ERROR.logPrefixString(PREFIX), message, throwable));
+	}
+	
 	/**
 	 * Prints the <code>properties</code> all key/value.
 	 * 
@@ -360,13 +422,13 @@ public final class LogUtility {
 		while (keys.hasMoreElements()) {
 			Object nextElement = keys.nextElement();
 			if (printAsKeyValue) {
-				debug("Key:" + nextElement + ", Value:" + properties.get(nextElement));
+				System.out.println("Key:" + nextElement + ", Value:" + properties.get(nextElement));
 			} else {
 				debug(nextElement.toString() + " = " + properties.get(nextElement));
 			}
 		}
 	}
-
+	
 	/**
 	 * Prints all the system properties.
 	 * 
@@ -387,7 +449,7 @@ public final class LogUtility {
 			print(USER_HOME);
 		}
 	}
-
+	
 	/**
 	 * Prints all the system properties.
 	 * 
@@ -396,7 +458,7 @@ public final class LogUtility {
 	public static void printSystemProperties(boolean printAsKeyValue) {
 		printSystemProperties(null, printAsKeyValue);
 	}
-
+	
 	/**
 	 * Prints the <code>object</code>.
 	 * 
@@ -405,7 +467,7 @@ public final class LogUtility {
 	public static void print(Object object) {
 		print(object.toString(), true);
 	}
-
+	
 	/**
 	 * Prints the <code>object</code> at the new line.
 	 * 
@@ -415,7 +477,7 @@ public final class LogUtility {
 	public static void print(Object object, boolean atNextLine) {
 		print(object.toString(), null, atNextLine);
 	}
-
+	
 	/**
 	 * 
 	 * @param str
@@ -423,7 +485,7 @@ public final class LogUtility {
 	public static void print() {
 		print("", null, true);
 	}
-
+	
 	/**
 	 * 
 	 * @param str
@@ -431,7 +493,7 @@ public final class LogUtility {
 	public static void print(String str) {
 		print(str, null, true);
 	}
-
+	
 	/**
 	 * 
 	 * @param str
@@ -451,7 +513,7 @@ public final class LogUtility {
 			}
 		}
 	}
-
+	
 	/**
 	 * Prints the specified strings separated with the given delimiter.
 	 * 
@@ -463,7 +525,7 @@ public final class LogUtility {
 			print(strings[i], delimiter, atNextLine);
 		}
 	}
-
+	
 	/**
 	 * Prints the specified strings separated with the given delimiter.
 	 * 
@@ -476,7 +538,7 @@ public final class LogUtility {
 			print();
 		}
 	}
-
+	
 	/**
 	 * Prints the specified printChar.
 	 * 
@@ -490,7 +552,7 @@ public final class LogUtility {
 		}
 		System.out.println();
 	}
-
+	
 	/**
 	 * Prints the specified printChar with the specified heading.
 	 * 
@@ -508,28 +570,30 @@ public final class LogUtility {
 		}
 		printLine(printChar, (length + heading.length() + 2));
 	}
-
+	
 	/**
-	 * Closes the specified <code>closeable</code> object.
+	 * Closes the specified <code>closeables</code> objects.
 	 * 
 	 * @param closeable
 	 */
-	public static void safeClose(Object closeable) {
-		if (closeable != null) {
-			try {
-				if (closeable instanceof Closeable) {
-					((Closeable) closeable).close();
-				} else if (closeable instanceof Socket) {
-					((Socket) closeable).close();
-				} else if (closeable instanceof ServerSocket) {
-					((ServerSocket) closeable).close();
+	public static void closeSilently(final Object... closeables) {
+		if (isNotNull(closeables)) {
+			for (Object closeable : closeables) {
+				try {
+					if (closeable instanceof Closeable) {
+						((Closeable) closeable).close();
+					} else if (closeable instanceof Socket) {
+						((Socket) closeable).close();
+					} else if (closeable instanceof ServerSocket) {
+						((ServerSocket) closeable).close();
+					}
+				} catch (Throwable ex) {
+					error("Error on close! closeable:" + closeable, ex);
 				}
-			} catch (Throwable ex) {
-				ex.printStackTrace();
 			}
 		}
 	}
-
+	
 	/**
 	 * Returns the string representation of the specified <code>throwable</code>
 	 * object.
@@ -537,33 +601,31 @@ public final class LogUtility {
 	 * @param throwable
 	 * @return
 	 */
-	public static String toString(Throwable throwable) {
+	public static String toString(final Throwable throwable) {
 		ByteArrayOutputStream outputStream = null;
 		PrintWriter printWriter = null;
 		try {
 			outputStream = new ByteArrayOutputStream();
-			printWriter = new PrintWriter(outputStream);
+			printWriter = new PrintWriter(new ByteArrayOutputStream());
 			throwable.printStackTrace(printWriter);
 			printWriter.flush();
 		} catch (Exception ex) {
-			error("Error converting stack trace to string.", throwable);
+			error("Error converting stack trace to string!", throwable);
 		} finally {
-			// close writer
-			safeClose(printWriter);
-			// close outputStream
-			safeClose(outputStream);
+			// close writer and outputStream
+			closeSilently(printWriter, outputStream);
 		}
-
+		
 		return new String(outputStream.toByteArray());
 	}
-
+	
 	/**
 	 * Removes the contents of the given <code>path</code> recursively.
 	 *
 	 * @param rootPath
 	 *            The rootPath to deleted recursively.
 	 */
-	public static void deleteRecursively(File rootPath, boolean logFileInfo) {
+	public static void deleteRecursively(final File rootPath, final boolean logFileInfo) {
 		if (rootPath.isFile()) {
 			if (logFileInfo) {
 				print(rootPath.getAbsolutePath());
@@ -582,16 +644,18 @@ public final class LogUtility {
 			rootPath.delete();
 		}
 	}
-
+	
 	/**
-	 * 
+	 * Prints all the system properties.
 	 */
-	public static void dumpSystemProperties() {
-		Properties props = System.getProperties();
-		for (Iterator<Map.Entry<Object, Object>> iter = props.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) iter.next();
+	public static void logSystemProperties() {
+		final Properties sysProperties = System.getProperties();
+		Map.Entry<Object, Object> entry = null;
+		for (Iterator<Map.Entry<Object, Object>> itr = sysProperties.entrySet().iterator(); itr.hasNext();) {
+			entry = (Map.Entry<Object, Object>) itr.next();
 			System.out.println("Key : " + entry.getKey() + ", Value : " + entry.getValue());
+			entry = null;
 		}
 	}
-
+	
 }

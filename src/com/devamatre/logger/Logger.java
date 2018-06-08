@@ -34,6 +34,7 @@ import org.apache.log4j.Level;
  * The <code>Logger</code> interface defines all the generic logging methods. It
  * delegates the calls to <code>org.apache.log4j.Category</code>.
  * 
+ * <pre>
  * <code>
  * Logging Levels:
  * OFF - 6, 
@@ -44,6 +45,7 @@ import org.apache.log4j.Level;
  * DEBUG - 1,
  * ALL - 0
  * </code>
+ * </pre>
  * 
  * @author Rohtash Lakra (rohtash.lakra@devamatre.com)
  * @author Rohtash Singh Lakra (rohtash.singh@gmail.com)
@@ -52,7 +54,7 @@ import org.apache.log4j.Level;
  * @since 1.0.0
  */
 public interface Logger {
-
+	
 	/**
 	 * FATAL - 5
 	 * 
@@ -66,7 +68,7 @@ public interface Logger {
 	 * @param object
 	 */
 	void fatal(Object object);
-
+	
 	/**
 	 * Log a message object with the <code>FATAL</code> level including the
 	 * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
@@ -80,7 +82,7 @@ public interface Logger {
 	 * @param throwable
 	 */
 	void fatal(Object object, Throwable throwable);
-
+	
 	/**
 	 * ERROR - 4
 	 * 
@@ -94,7 +96,7 @@ public interface Logger {
 	 * @param object
 	 */
 	void error(Object object);
-
+	
 	/**
 	 * Log a message object with the <code>ERROR</code> level including the
 	 * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
@@ -108,7 +110,7 @@ public interface Logger {
 	 * @param throwable
 	 */
 	void error(Object object, Throwable throwable);
-
+	
 	/**
 	 * WARN - 3
 	 * 
@@ -122,7 +124,7 @@ public interface Logger {
 	 * @param object
 	 */
 	void warn(Object object);
-
+	
 	/**
 	 * Log a message object with the <code>WARN</code> level including the stack
 	 * trace of the {@link Throwable} <code>t</code> passed as parameter. It
@@ -136,7 +138,7 @@ public interface Logger {
 	 * @param throwable
 	 */
 	void warn(Object object, Throwable throwable);
-
+	
 	/**
 	 * INFO - 2
 	 * 
@@ -150,7 +152,7 @@ public interface Logger {
 	 * @param object
 	 */
 	void info(Object object);
-
+	
 	/**
 	 * Log a message object with the <code>INFO</code> level including the stack
 	 * trace of the {@link Throwable} <code>t</code> passed as parameter. It
@@ -164,7 +166,7 @@ public interface Logger {
 	 * @param throwable
 	 */
 	void info(Object object, Throwable throwable);
-
+	
 	/**
 	 * DEBUG - 1
 	 * 
@@ -178,7 +180,7 @@ public interface Logger {
 	 * @param object
 	 */
 	void debug(Object object);
-
+	
 	/**
 	 * Log a message object with the <code>DEBUG</code> level including the
 	 * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
@@ -192,42 +194,42 @@ public interface Logger {
 	 * @param throwable
 	 */
 	void debug(Object object, Throwable throwable);
-
+	
 	/**
 	 * Checks whether this category is enabled for the <code>DEBUG</code> Level.
 	 * 
 	 * @return
 	 */
 	boolean isDebugEnabled();
-
+	
 	/**
 	 * The debugEnabled to be set.
 	 * 
 	 * @param debugEnabled
 	 */
 	void setDebugEnabled(boolean debugEnabled);
-
+	
 	/**
 	 * Checks whether this category is enabled for the <code>INFO</code> Level.
 	 * 
 	 * @return
 	 */
 	boolean isInfoEnabled();
-
+	
 	/**
 	 * Checks whether this category is enabled for the <code>WARN</code> Level.
 	 * 
 	 * @return
 	 */
 	boolean isWarnEnabled();
-
+	
 	/**
 	 * Checks whether this category is enabled for the <code>ERROR</code> Level.
 	 * 
 	 * @return
 	 */
 	boolean isErrorEnabled();
-
+	
 	/**
 	 * Checks whether this category is enabled for the <code>FATAL</code> Level.
 	 * 

@@ -38,7 +38,7 @@ package com.devamatre.logger;
  * @since 1.0.0
  */
 public enum LogLevel {
-
+	
 	/** Logging Level - ALL = 0 */
 	ALL,
 	/** Logging Leven - DEBUG = 1 */
@@ -53,13 +53,13 @@ public enum LogLevel {
 	FATAL,
 	/** Logging Level - OFF = 6 */
 	OFF;
-
+	
 	/**
 	 * The unreachable constructor to block creating the objects outside.
 	 */
 	private LogLevel() {
 	}
-
+	
 	/**
 	 * Returns the string representation of this debug level (See documentation
 	 * for log levels).
@@ -67,9 +67,9 @@ public enum LogLevel {
 	 * @see java.lang.Enum#toString()
 	 */
 	public String toString() {
-		return name().toUpperCase();
+		return name().toUpperCase().intern();
 	}
-
+	
 	/**
 	 * Returns the log level position in its enum declaration (By default the
 	 * initial constant is assigned an ordinal of zero).
@@ -79,7 +79,7 @@ public enum LogLevel {
 	public int getLogLevel() {
 		return this.ordinal();
 	}
-
+	
 	/**
 	 * Returns true if the log level is > OFF otherwise false.
 	 * 
@@ -87,5 +87,15 @@ public enum LogLevel {
 	 */
 	public boolean isLogEnabled() {
 		return (getLogLevel() > LogLevel.OFF.getLogLevel());
+	}
+	
+	/***
+	 * Returns the log string prefixed with the specified <code>prefix</code>.
+	 * 
+	 * @param prefix
+	 * @return
+	 */
+	public String logPrefixString(final String prefix) {
+		return (prefix + toString() + ":").intern();
 	}
 }
