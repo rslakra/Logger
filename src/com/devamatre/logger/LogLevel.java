@@ -41,7 +41,7 @@ public enum LogLevel {
 	
 	/** Logging Level - ALL = 0 */
 	ALL,
-	/** Logging Leven - DEBUG = 1 */
+	/** Logging Level - DEBUG = 1 */
 	DEBUG,
 	/** Logging Level - INFO = 2 */
 	INFO,

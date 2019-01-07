@@ -62,7 +62,7 @@ public final class LogManager {
 	/* Default Logging Level. */
 	public static final LogLevel DEFAULT_LOG_LEVEL = LogLevel.WARN;
 
-	/* devamatre Default Logging Pattern. */
+	/* Devamatre Default Logging Pattern. */
 	public static final String DEFAULT_PATTERN = "[%d{MM-dd-yyyy hh:mm:ss a}] [%t] %5p [%c{1}(%L)] - %m%n";
 
 	/* Default Remote Log Host. */
@@ -71,7 +71,7 @@ public final class LogManager {
 	/* Default Logger File */
 	public static final String LOG4J_PROPERTY_FILE = "dLog4j.properties";
 
-	/* devamatre log4j configuration file */
+	/* Devamatre log4j configuration file */
 	public static final String LOG4J_XML_FILE = "dLog4j.xml";
 
 	/* Remote Log Host Port */
