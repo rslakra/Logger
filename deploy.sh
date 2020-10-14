@@ -1,4 +1,6 @@
 #!/bin/bash
+#https://github.com/rslakra/Releases
+#mvn deploy -Dregistry=https://maven.pkg.github.com/rslakra -Dtoken=GH_TOKEN
 export GROUP_ID=com.devamatre
 export ARTIFACT_ID=dLogger
 export VERSION=1.0.0
