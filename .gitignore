@@ -4,8 +4,8 @@
 /**/release-v*/
 /**/build
 /**/target
-/**/*.iml
 /**/*.log
 /**/*.jar
 /**/.idea
 /**/.settings
+/**/.gradle
