@@ -66,6 +66,7 @@ public interface Logger {
 	 * </p>
 	 * 
 	 * @param object
+	 *
 	 */
 	void fatal(Object object);
 	
