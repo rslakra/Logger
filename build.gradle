@@ -12,7 +12,7 @@ plugins {
 
 group = "com.devamatre"
 //name = "dLogger"
-version = '1.0-SNAPSHOT'
+version = '1.1-SNAPSHOT'
 description = "The ${name} Project"
 sourceCompatibility = '1.8'
 //archivesBaseName = "dLogger"
@@ -21,7 +21,8 @@ ext {
     orgName = 'Devamatre'
     releasesDir = 'Releases'
     log4jVersion = '1.2.17'
-    junitVersion = '4.13.1'
+    jUnitVersion = '4.13.1'
+    jUnitJupiterVersion = '5.6.0'
     loggerMainClass = 'com.devamatre.logger.testcases.TestLogger'
 }
 
@@ -33,14 +34,31 @@ repositories {
         url = uri('https://github.com/rslakra/Releases')
     }
 
-    maven {
-        url = uri('http://repo.maven.apache.org/maven2')
-    }
+    mavenCentral()
 }
 
 dependencies {
     implementation "log4j:log4j:${log4jVersion}"
-    implementation "junit:junit:${junitVersion}"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitJupiterVersion}"
+    // The runtime is junit-jupiter-engine for JUnit 5
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+
+    // Enabling Support for Old Versions
+
+    // junit-vintage-engine for JUnit 3 or 4.
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${jUnitJupiterVersion}"
+    // Enabling Support for Old Versions
+    testCompileOnly "junit:junit:${jUnitVersion}"
+
+}
+
+test {
+    useJUnitPlatform()
+//    useJUnitPlatform {
+//        includeTags 'fast'
+//        excludeTags 'slow'
+//    }
 }
 
 uploadArchives {

@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Devamatre Inc. 2009-2018. All rights reserved.
- * 
+ *
  * This code is licensed to Devamatre under one or more contributor license 
  * agreements. The reproduction, transmission or use of this code, in source 
  * and binary forms, with or without modification, are permitted provided 
@@ -10,7 +10,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -22,7 +22,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *      
+ *
  * Devamatre reserves the right to modify the technical specifications and or 
  * features without any prior notice.
  *****************************************************************************/
@@ -37,374 +37,468 @@ import org.apache.log4j.Level;
  * <code>
  * [Indentation Example - Instance 0]
  * 2009/09/09 22:06:28.109: Section start
- * 	:   Subsection A
- *  ....
- *  :        Subsection A.1
- *  ....
- *  :            Subsection A.1.1
- *  ....
- *  :            End Subsection A.1.1
- *  ....
- *  :        End of Subsection A.1
- *  ....
- *  :   End of Subsection A
+ * :   Subsection A
+ * ....
+ * :        Subsection A.1
+ * ....
+ * :            Subsection A.1.1
+ * ....
+ * :            End Subsection A.1.1
+ * ....
+ * :        End of Subsection A.1
+ * ....
+ * :   End of Subsection A
  * </code>
  * <p>
  * This indentation will help to know in understanding of the logs.
  * </p>
- * 
+ *
  * @author Rohtash Lakra (rohtash.lakra@devamatre.com)
  * @author Rohtash Singh Lakra (rohtash.singh@gmail.com)
- * @created 2009-08-09 2:51:50 PM
  * @version 1.0.0
+ * @created 2009-08-09 2:51:50 PM
  * @since 1.0.0
  */
 public final class LoggerImpl implements Logger {
 
-	/* The Root logger. */
-	private Category rootLogger;
+    /* The Root logger. */
+    private Category rootLogger;
 
-	/* The Root logger. */
-	private boolean supportIndentation;
+    /* The Root logger. */
+    private boolean supportIndentation;
 
-	/* Maintains indentation of the log messages. */
-	private final StringBuilder indentBuilder = new StringBuilder();
+    /* Maintains indentation of the log messages. */
+    private final StringBuilder indentBuilder = new StringBuilder();
 
-	/* debugEnabled - user internally. */
-	private boolean debugEnabled;
+    /* debugEnabled - user internally. */
+    private boolean debugEnabled;
 
-	/*
-	 * This code is added to optimize the indentation for performance.
-	 */
-	private int lastDepth = 0;
-	private String indentString;
+    /*
+     * This code is added to optimize the indentation for performance.
+     */
+    private int lastDepth = 0;
+    private String indentString;
 
-	/**
-	 * Parameterized Constructor.
-	 * 
-	 * @param logClass
-	 */
-	public LoggerImpl(Class<?> logClass) {
-		this.rootLogger = org.apache.log4j.LogManager.getLogger(logClass);
-		supportIndentation = false;
-		debugEnabled = true;
-	}
+    /**
+     * Parameterized Constructor.
+     *
+     * @param logClass
+     */
+    public LoggerImpl(Class<?> logClass) {
+        this.rootLogger = org.apache.log4j.LogManager.getLogger(logClass);
+        supportIndentation = false;
+        debugEnabled = true;
+    }
 
-	/**
-	 * This method returns the string after indentation up to the passed depth.
-	 * 
-	 * @param depth
-	 * @return string after indentation.
-	 */
-	private String indent(int depth) {
-		LogUtility.debug("+indent(" + depth + ")");
+    /**
+     * This method returns the string after indentation up to the passed depth.
+     *
+     * @param depth
+     * @return string after indentation.
+     */
+    private String indent(int depth) {
+        LogUtility.debug("+indent(" + depth + ")");
+        if (lastDepth != depth) {
+            this.lastDepth = depth;
 
-		if (lastDepth != depth) {
-			this.lastDepth = depth;
+            /* prepare indented string by emptying it. */
+            indentBuilder.delete(0, indentBuilder.length());
+            for (int i = 0; i < depth; i++) {
+                indentBuilder.append(LogUtility.HTAB);
+            }
 
-			/* prepare indented string by emptying it. */
-			indentBuilder.delete(0, indentBuilder.length());
-			for (int i = 0; i < depth; i++) {
-				indentBuilder.append(LogUtility.HTAB);
-			}
+            // avoid multiple object creation.
+            indentString = indentBuilder.toString();
+        }
 
-			// avoid multiple object creation.
-			indentString = indentBuilder.toString();
-		}
+        LogUtility.debug("-indent(), indentString:" + indentString);
+        return indentString;
+    }
 
-		LogUtility.debug("-indent(), indentString:" + indentString);
-		return indentString;
-	}
+    /**
+     * Returns the object to be logged with required indents.
+     *
+     * @param object
+     * @return object to be logged.
+     */
+    private Object getIndents(Object object) {
+        return getIndents(object, supportIndentation);
+    }
 
-	/**
-	 * Returns the object to be logged with required indents.
-	 * 
-	 * @param object
-	 * @return object to be logged.
-	 */
-	private Object getIndents(Object object) {
-		return getIndents(object, supportIndentation);
-	}
+    /**
+     * Returns the object to be logged with required indents.
+     *
+     * @param object
+     * @param indentation
+     * @return
+     */
+    private Object getIndents(Object object, boolean indentation) {
+        LogUtility.debug("+getIndents(" + object + ", " + indentation + ")");
 
-	/**
-	 * Returns the object to be logged with required indents.
-	 * 
-	 * @param object
-	 * @param indentation
-	 * @return
-	 */
-	private Object getIndents(Object object, boolean indentation) {
-		LogUtility.debug("+getIndents(" + object + ", " + indentation + ")");
+        /* check indentation supported or not. */
+        if (indentation) {
+            /* get current stack trace and adjust for this method. */
+            int depth = (new Throwable().getStackTrace().length - 4);
+            object = indent(depth) + object;
+        }
 
-		/* check indentation supported or not. */
-		if (indentation) {
-			/* get current stack trace and adjust for this method. */
-			int depth = (new Throwable().getStackTrace().length - 4);
-			object = indent(depth) + object;
-		}
+        LogUtility.debug("-getIndents(), object: " + object);
+        return object;
+    }
 
-		LogUtility.debug("-getIndents(), object: " + object);
-		return object;
-	}
+    /**
+     * Logs a message object with the {@link Level#FATAL FATAL} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @see com.devamatre.logger.Logger#fatal(java.lang.Object)
+     */
+    @Override
+    public void fatal(Object object) {
+        if (isFatalEnabled()) {
+            rootLogger.fatal(getIndents(object));
+        }
+    }
 
-	/**
-	 * Logs a message object with the {@link Level#FATAL FATAL} Level. It
-	 * delegates the calls to <code>org.apache.log4j.Category</code>.
-	 * 
-	 * <p>
-	 * See <code>org.apache.log4j.Category</code> for more detailed information.
-	 * </p>
-	 * 
-	 * @param object
-	 * @see com.devamatre.logger.Logger#fatal(java.lang.Object)
-	 */
-	@Override
-	public void fatal(Object object) {
-		if (isFatalEnabled()) {
-			rootLogger.fatal(getIndents(object));
-		}
-	}
+    /**
+     * Log a message object with the <code>FATAL</code> level including the
+     * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
+     * It delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @param throwable
+     * @see com.devamatre.logger.Logger#fatal(java.lang.Object,
+     * java.lang.Throwable)
+     */
+    @Override
+    public void fatal(Object object, Throwable throwable) {
+        if (isFatalEnabled()) {
+            rootLogger.fatal(getIndents(object), throwable);
+        }
+    }
 
-	/**
-	 * Log a message object with the <code>FATAL</code> level including the
-	 * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
-	 * It delegates the calls to <code>org.apache.log4j.Category</code>.
-	 * 
-	 * <p>
-	 * See <code>org.apache.log4j.Category</code> for more detailed information.
-	 * </p>
-	 * 
-	 * @param object
-	 * @param throwable
-	 * @see com.devamatre.logger.Logger#fatal(java.lang.Object,
-	 *      java.lang.Throwable)
-	 */
-	@Override
-	public void fatal(Object object, Throwable throwable) {
-		if (isFatalEnabled()) {
-			rootLogger.fatal(getIndents(object), throwable);
-		}
-	}
+    /**
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void fatal(String format, Object... arguments) {
+        this.fatal(String.format(format, arguments));
+    }
 
-	/**
-	 * Logs a message object with the {@link Level#ERROR ERROR} Level. It
-	 * delegates the calls to <code>org.apache.log4j.Category</code>.
-	 * 
-	 * <p>
-	 * See <code>org.apache.log4j.Category</code> for more detailed information.
-	 * </p>
-	 * 
-	 * @param object
-	 * @see com.devamatre.logger.Logger#error(java.lang.Object)
-	 */
-	@Override
-	public void error(Object object) {
-		if (isErrorEnabled()) {
-			rootLogger.error(getIndents(object));
-		}
-	}
+    /**
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void fatal(Throwable throwable, String format, Object... arguments) {
+        this.fatal(String.format(format, arguments), throwable);
+    }
 
-	/**
-	 * Log a message object with the <code>ERROR</code> level including the
-	 * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
-	 * It delegates the calls to <code>org.apache.log4j.Category</code>.
-	 * 
-	 * <p>
-	 * See <code>org.apache.log4j.Category</code> for more detailed information.
-	 * </p>
-	 * 
-	 * @param object
-	 * @param throwable
-	 * @see com.devamatre.logger.Logger#error(java.lang.Object,
-	 *      java.lang.Throwable)
-	 */
-	@Override
-	public void error(Object object, Throwable throwable) {
-		if (isErrorEnabled()) {
-			rootLogger.error(getIndents(object), throwable);
-		}
-	}
+    /**
+     * Logs a message object with the {@link Level#ERROR ERROR} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @see com.devamatre.logger.Logger#error(java.lang.Object)
+     */
+    @Override
+    public void error(Object object) {
+        if (isErrorEnabled()) {
+            rootLogger.error(getIndents(object));
+        }
+    }
 
-	/**
-	 * Logs a message object with the {@link Level#WARN WARN} Level. It
-	 * delegates the calls to <code>org.apache.log4j.Category</code>.
-	 * 
-	 * <p>
-	 * See <code>org.apache.log4j.Category</code> for more detailed information.
-	 * </p>
-	 * 
-	 * @param object
-	 * @see com.devamatre.logger.Logger#warn(java.lang.Object)
-	 */
-	@Override
-	public void warn(Object object) {
-		if (isWarnEnabled()) {
-			rootLogger.warn(getIndents(object));
-		}
-	}
+    /**
+     * Log a message object with the <code>ERROR</code> level including the
+     * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
+     * It delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @param throwable
+     * @see com.devamatre.logger.Logger#error(java.lang.Object,
+     * java.lang.Throwable)
+     */
+    @Override
+    public void error(Object object, Throwable throwable) {
+        if (isErrorEnabled()) {
+            rootLogger.error(getIndents(object), throwable);
+        }
+    }
 
-	/**
-	 * Log a message object with the <code>WARN</code> level including the stack
-	 * trace of the {@link Throwable} <code>t</code> passed as parameter. It
-	 * delegates the calls to <code>org.apache.log4j.Category</code>.
-	 * 
-	 * <p>
-	 * See <code>org.apache.log4j.Category</code> for more detailed information.
-	 * </p>
-	 * 
-	 * @param object
-	 * @param throwable
-	 * @see com.devamatre.logger.Logger#warn(java.lang.Object,
-	 *      java.lang.Throwable)
-	 */
-	@Override
-	public void warn(Object object, Throwable throwable) {
-		if (isWarnEnabled()) {
-			rootLogger.warn(getIndents(object), throwable);
-		}
-	}
+    /**
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void error(String format, Object... arguments) {
+        this.error(String.format(format, arguments));
+    }
 
-	/**
-	 * Logs a message object with the {@link Level#INFO INFO} Level. It
-	 * delegates the calls to <code>org.apache.log4j.Category</code>.
-	 * 
-	 * <p>
-	 * See <code>org.apache.log4j.Category</code> for more detailed information.
-	 * </p>
-	 * 
-	 * @param object
-	 * @see com.devamatre.logger.Logger#info(java.lang.Object)
-	 */
-	@Override
-	public void info(Object object) {
-		if (isInfoEnabled()) {
-			rootLogger.info(getIndents(object));
-		}
-	}
+    /**
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void error(Throwable throwable, String format, Object... arguments) {
+        this.error(String.format(format, arguments), throwable);
+    }
 
-	/**
-	 * Log a message object with the <code>INFO</code> level including the stack
-	 * trace of the {@link Throwable} <code>t</code> passed as parameter. It
-	 * delegates the calls to <code>org.apache.log4j.Category</code>.
-	 * 
-	 * <p>
-	 * See <code>org.apache.log4j.Category</code> for more detailed information.
-	 * </p>
-	 * 
-	 * @param object
-	 * @param throwable
-	 * @see com.devamatre.logger.Logger#info(java.lang.Object,
-	 *      java.lang.Throwable)
-	 */
-	@Override
-	public void info(Object object, Throwable throwable) {
-		if (isInfoEnabled()) {
-			rootLogger.info(getIndents(object), throwable);
-		}
-	}
+    /**
+     * Logs a message object with the {@link Level#WARN WARN} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @see com.devamatre.logger.Logger#warn(java.lang.Object)
+     */
+    @Override
+    public void warn(Object object) {
+        if (isWarnEnabled()) {
+            rootLogger.warn(getIndents(object));
+        }
+    }
 
-	/**
-	 * Logs a message object with the {@link Level#DEBUG DEBUG} Level. It
-	 * delegates the calls to <code>org.apache.log4j.Category</code>.
-	 * 
-	 * <p>
-	 * See <code>org.apache.log4j.Category</code> for more detailed information.
-	 * </p>
-	 * 
-	 * @param object
-	 * @see com.devamatre.logger.Logger#debug(java.lang.Object)
-	 */
-	@Override
-	public void debug(Object object) {
-		if (isDebugEnabled()) {
-			rootLogger.debug(getIndents(object));
-		}
-	}
+    /**
+     * Log a message object with the <code>WARN</code> level including the stack
+     * trace of the {@link Throwable} <code>t</code> passed as parameter. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @param throwable
+     * @see com.devamatre.logger.Logger#warn(java.lang.Object,
+     * java.lang.Throwable)
+     */
+    @Override
+    public void warn(Object object, Throwable throwable) {
+        if (isWarnEnabled()) {
+            rootLogger.warn(getIndents(object), throwable);
+        }
+    }
 
-	/**
-	 * Log a message object with the <code>DEBUG</code> level including the
-	 * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
-	 * It delegates the calls to <code>org.apache.log4j.Category</code>.
-	 * 
-	 * <p>
-	 * See <code>org.apache.log4j.Category</code> for more detailed information.
-	 * </p>
-	 * 
-	 * @param object
-	 * @param throwable
-	 * @see com.devamatre.logger.Logger#debug(java.lang.Object,
-	 *      java.lang.Throwable)
-	 */
-	@Override
-	public void debug(Object object, Throwable throwable) {
-		if (isDebugEnabled()) {
-			rootLogger.debug(getIndents(object), throwable);
-		}
-	}
+    /**
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void warn(String format, Object... arguments) {
+        this.warn(String.format(format, arguments));
+    }
 
-	/**
-	 * Checks whether this category is enabled for the <code>DEBUG</code> Level.
-	 * 
-	 * @return
-	 * @see com.devamatre.logger.Logger#isDebugEnabled()
-	 */
-	@Override
-	public boolean isDebugEnabled() {
-		return rootLogger.isEnabledFor(Level.DEBUG) && debugEnabled;
-	}
+    /**
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void warn(Throwable throwable, String format, Object... arguments) {
+        this.warn(String.format(format, arguments), throwable);
+    }
 
-	/**
-	 * The debugEnabled to be set.
-	 * 
-	 * @param debugEnabled
-	 * @see com.devamatre.logger.Logger#setDebugEnabled(boolean)
-	 */
-	@Override
-	public void setDebugEnabled(boolean debugEnabled) {
-		this.debugEnabled = debugEnabled;
-	}
+    /**
+     * Logs a message object with the {@link Level#INFO INFO} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @see com.devamatre.logger.Logger#info(java.lang.Object)
+     */
+    @Override
+    public void info(Object object) {
+        if (isInfoEnabled()) {
+            rootLogger.info(getIndents(object));
+        }
+    }
 
-	/**
-	 * Checks whether this category is enabled for the <code>INFO</code> Level.
-	 * 
-	 * @return
-	 * @see com.devamatre.logger.Logger#isInfoEnabled()
-	 */
-	@Override
-	public boolean isInfoEnabled() {
-		return rootLogger.isEnabledFor(Level.WARN);
-	}
+    /**
+     * Log a message object with the <code>INFO</code> level including the stack
+     * trace of the {@link Throwable} <code>t</code> passed as parameter. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @param throwable
+     * @see com.devamatre.logger.Logger#info(java.lang.Object,
+     * java.lang.Throwable)
+     */
+    @Override
+    public void info(Object object, Throwable throwable) {
+        if (isInfoEnabled()) {
+            rootLogger.info(getIndents(object), throwable);
+        }
+    }
 
-	/**
-	 * Checks whether this category is enabled for the <code>WARN</code> Level.
-	 * 
-	 * @return
-	 * @see com.devamatre.logger.Logger#isWarnEnabled()
-	 */
-	@Override
-	public boolean isWarnEnabled() {
-		return rootLogger.isEnabledFor(Level.WARN);
-	}
+    /**
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void info(String format, Object... arguments) {
+        this.info(String.format(format, arguments));
+    }
 
-	/**
-	 * Checks whether this category is enabled for the <code>ERROR</code> Level.
-	 * 
-	 * @return
-	 * @see com.devamatre.logger.Logger#isErrorEnabled()
-	 */
-	@Override
-	public boolean isErrorEnabled() {
-		return rootLogger.isEnabledFor(Level.ERROR);
-	}
+    /**
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void info(Throwable throwable, String format, Object... arguments) {
+        this.info(String.format(format, arguments), throwable);
+    }
 
-	/**
-	 * Checks whether this category is enabled for the <code>FATAL</code> Level.
-	 * 
-	 * @return
-	 * @see com.devamatre.logger.Logger#isFatalEnabled()
-	 */
-	@Override
-	public boolean isFatalEnabled() {
-		return rootLogger.isEnabledFor(Level.FATAL);
-	}
+    /**
+     * Logs a message object with the {@link Level#DEBUG DEBUG} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @see com.devamatre.logger.Logger#debug(java.lang.Object)
+     */
+    @Override
+    public void debug(Object object) {
+        if (isDebugEnabled()) {
+            rootLogger.debug(getIndents(object));
+        }
+    }
+
+    /**
+     * Log a message object with the <code>DEBUG</code> level including the
+     * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
+     * It delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @param throwable
+     * @see com.devamatre.logger.Logger#debug(java.lang.Object,
+     * java.lang.Throwable)
+     */
+    @Override
+    public void debug(Object object, Throwable throwable) {
+        if (isDebugEnabled()) {
+            rootLogger.debug(getIndents(object), throwable);
+        }
+    }
+
+    /**
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void debug(String format, Object... arguments) {
+        this.debug(String.format(format, arguments));
+    }
+
+    /**
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void debug(Throwable throwable, String format, Object... arguments) {
+        this.debug(String.format(format, arguments), throwable);
+    }
+
+    /**
+     * Checks whether this category is enabled for the <code>DEBUG</code> Level.
+     *
+     * @return
+     * @see com.devamatre.logger.Logger#isDebugEnabled()
+     */
+    @Override
+    public boolean isDebugEnabled() {
+        return rootLogger.isEnabledFor(Level.DEBUG) && debugEnabled;
+    }
+
+    /**
+     * The debugEnabled to be set.
+     *
+     * @param debugEnabled
+     * @see com.devamatre.logger.Logger#setDebugEnabled(boolean)
+     */
+    @Override
+    public void setDebugEnabled(boolean debugEnabled) {
+        this.debugEnabled = debugEnabled;
+    }
+
+    /**
+     * Checks whether this category is enabled for the <code>INFO</code> Level.
+     *
+     * @return
+     * @see com.devamatre.logger.Logger#isInfoEnabled()
+     */
+    @Override
+    public boolean isInfoEnabled() {
+        return rootLogger.isEnabledFor(Level.WARN);
+    }
+
+    /**
+     * Checks whether this category is enabled for the <code>WARN</code> Level.
+     *
+     * @return
+     * @see com.devamatre.logger.Logger#isWarnEnabled()
+     */
+    @Override
+    public boolean isWarnEnabled() {
+        return rootLogger.isEnabledFor(Level.WARN);
+    }
+
+    /**
+     * Checks whether this category is enabled for the <code>ERROR</code> Level.
+     *
+     * @return
+     * @see com.devamatre.logger.Logger#isErrorEnabled()
+     */
+    @Override
+    public boolean isErrorEnabled() {
+        return rootLogger.isEnabledFor(Level.ERROR);
+    }
+
+    /**
+     * Checks whether this category is enabled for the <code>FATAL</code> Level.
+     *
+     * @return
+     * @see com.devamatre.logger.Logger#isFatalEnabled()
+     */
+    @Override
+    public boolean isFatalEnabled() {
+        return rootLogger.isEnabledFor(Level.FATAL);
+    }
 }

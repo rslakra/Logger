@@ -34,12 +34,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * The <code>LogUtility</code> class helps to log devamatre logger logs.
@@ -147,25 +145,25 @@ public final class LogUtility {
     public static final String SPACE = " ".intern();
 
     /**
-     * <code>sDebugEnabled</code>
+     * <code>DEBUG_ENABLED</code>
      */
-    private static boolean sDebugEnabled = false;
+    private static boolean DEBUG_ENABLED = false;
 
     /**
-     * <code>sLogEnabled</code>
+     * <code>LOG_ENABLED</code>
      */
-    private static boolean sLogEnabled = true;
+    private static boolean LOG_ENABLED = true;
 
     /**
-     * <code>sConsoleEnabled</code>
+     * <code>CONSOLE_ENABLED</code>
      */
-    private static boolean sConsoleEnabled = true;
+    private static boolean CONSOLE_ENABLED = true;
 
     /**
-     * The <code>sDisableAll</code> suppresses the logging of all the logs
+     * The <code>DISABLE_ALL</code> suppresses the logging of all the logs
      * including errors.
      */
-    private static boolean sDisableAll = false;
+    private static boolean DISABLE_ALL = false;
 
     /**
      * LOG PREFIXES.
@@ -173,9 +171,9 @@ public final class LogUtility {
     private static final String PREFIX = "LogUtility:";
 
     static {
-        final String keyLog4jDebug = OptionConverter.getSystemProperty(DEBUG_KEY, null);
-        if (!isNullOrEmpty(keyLog4jDebug)) {
-            setDebugEnabled(OptionConverter.toBoolean(keyLog4jDebug, true));
+        final String debugLog4jKey = OptionConverter.getSystemProperty(DEBUG_KEY, null);
+        if (!isNullOrEmpty(debugLog4jKey)) {
+            setDebugEnabled(OptionConverter.toBoolean(debugLog4jKey, true));
         }
     }
 
@@ -184,12 +182,12 @@ public final class LogUtility {
     // /////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns the <code>sDebugEnabled</code> value.
+     * Returns the <code>DEBUG_ENABLED</code> value.
      *
      * @return
      */
     public static boolean isDebugEnabled() {
-        return sDebugEnabled;
+        return DEBUG_ENABLED;
     }
 
     /**
@@ -198,16 +196,16 @@ public final class LogUtility {
      * @param debugEnabled
      */
     public static void setDebugEnabled(final boolean debugEnabled) {
-        sDebugEnabled = debugEnabled;
+        DEBUG_ENABLED = debugEnabled;
     }
 
     /**
-     * Returns the <code>sDisableAll</code> value.
+     * Returns the <code>DISABLE_ALL</code> value.
      *
      * @return
      */
     public static boolean isDisableAll() {
-        return sDisableAll;
+        return DISABLE_ALL;
     }
 
     /**
@@ -217,34 +215,34 @@ public final class LogUtility {
      * @param disableAll
      */
     public static void setDisableAll(final boolean disableAll) {
-        sDisableAll = disableAll;
+        DISABLE_ALL = disableAll;
     }
 
     /**
-     * Returns the <code>sLogEnabled</code> value.
+     * Returns the <code>LOG_ENABLED</code> value.
      *
      * @return
      */
     public static boolean isLogEnabled() {
-        return sLogEnabled;
+        return LOG_ENABLED;
     }
 
     /**
-     * The <code>sLogEnabled</code> to be set.
+     * The <code>LOG_ENABLED</code> to be set.
      *
      * @param logEnabled
      */
     public static void setLogEnabled(final boolean logEnabled) {
-        sLogEnabled = logEnabled;
+        LOG_ENABLED = logEnabled;
     }
 
     /**
-     * Returns the <code>sConsoleEnabled</code> value.
+     * Returns the <code>CONSOLE_ENABLED</code> value.
      *
      * @return
      */
     public static boolean isConsoleEnabled() {
-        return sConsoleEnabled;
+        return CONSOLE_ENABLED;
     }
 
     /**
@@ -253,7 +251,7 @@ public final class LogUtility {
      * @param consoleEnabled
      */
     public static void setConsoleEnabled(final boolean consoleEnabled) {
-        sConsoleEnabled = consoleEnabled;
+        CONSOLE_ENABLED = consoleEnabled;
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -313,24 +311,36 @@ public final class LogUtility {
     }
 
     /**
-     * Returns true if the <code>string</code> is null or empty otherwise false.
+     * Returns true if the <code>object</code> is null or empty otherwise false.
      *
-     * @param string
+     * @param object
      * @return
      */
-    public static boolean isNullOrEmpty(final CharSequence string) {
-        return (isNull(string) || string.toString().isEmpty() || string.toString().trim().length() == 0);
+    public static boolean isNullOrEmpty(final Object object) {
+        if (isNull(object)) {
+            return true;
+        } else if (CharSequence.class.isAssignableFrom(object.getClass())) {
+            return (((CharSequence) object).length() == 0 || ((CharSequence) object).toString().trim().length() == 0);
+        } else if (object.getClass().isArray()) {
+            return (Array.getLength(object) == 0);
+        } else if (Collection.class.isAssignableFrom(object.getClass())) {
+            return ((Collection<?>) object).isEmpty();
+        } else if (Map.class.isAssignableFrom(object.getClass())) {
+            return ((Map<?, ?>) object).isEmpty();
+        }
+
+        return false;
     }
 
     /**
-     * Returns true if the <code>string</code> is neither null nor empty
+     * Returns true if the <code>object</code> is neither null nor empty
      * otherwise false.
      *
-     * @param string
+     * @param object
      * @return
      */
-    public static boolean isNotNullOrEmpty(final CharSequence string) {
-        return (!isNullOrEmpty(string));
+    public static boolean isNotNullOrEmpty(final Object object) {
+        return (!isNullOrEmpty(object));
     }
 
     /**
@@ -639,7 +649,7 @@ public final class LogUtility {
         PrintWriter printWriter = null;
         try {
             outputStream = new ByteArrayOutputStream();
-            printWriter = new PrintWriter(new ByteArrayOutputStream());
+            printWriter = new PrintWriter(outputStream);
             throwable.printStackTrace(printWriter);
             printWriter.flush();
         } catch (Exception ex) {

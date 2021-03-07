@@ -26,16 +26,9 @@
  * Devamatre reserves the right to modify the technical specifications and or 
  * features without any prior notice.
  *****************************************************************************/
-package com.devamatre.logger.junit;
-
-import com.devamatre.logger.LogManager;
-import com.devamatre.logger.mock.MockLogManager;
-
-import junit.framework.TestCase;
+package com.devamatre.logger;
 
 /**
- * Provides base functionality for all unit tests. This class contains
- * <code>protected</code> methods that should be overridden by derived class.
  * 
  * @author Rohtash Lakra (rohtash.lakra@devamatre.com)
  * @author Rohtash Singh Lakra (rohtash.singh@gmail.com)
@@ -43,39 +36,40 @@ import junit.framework.TestCase;
  * @version 1.0.0
  * @since 1.0.0
  */
-public abstract class AbstractTestCase extends TestCase {
+public final class MockLogManager {
 
-	/** Configure Logger */
-	static {
-		MockLogManager.configure(LogManager.LOG4J_PROPERTY_FILE);
-	}
-
-	/* Constructor */
-	public AbstractTestCase() {
-
-		/* Clean up our mess when the tests are complete. */
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			/**
-			 * @see Runnable#run()
-			 */
-			public void run() {
-				System.out.println("Shutdown Hook!");
-				/*
-				 * don't un-comment the below line, it will delete all files
-				 * from current folder.
-				 */
-				// delete(new File("."));
-			}
-		}));
+	/**
+	 * Default Constructor.
+	 */
+	private MockLogManager() {
 	}
 
 	/**
-	 * (non-Javadoc)
+	 * This method returns the Logger for the specified class.
 	 * 
-	 * @throws Exception
-	 * @see junit.framework.TestCase#setUp()
+	 * @param klass
+	 * @return
 	 */
-	protected void setUp() throws Exception {
-		super.setUp();
+	public static Logger getLogger(Class<?> klass) {
+		return new MockLogger(klass);
+	}
+
+	/**
+	 * Configures the logger with the specified logging level.
+	 * 
+	 * @param configPath
+	 */
+	public static void configure(String configPath) {
+		LogManager.configure(configPath);
+	}
+
+	/**
+	 * Configures the logger with the specified logging level.
+	 * 
+	 * @param forceLogToConsole
+	 * @param level
+	 */
+	public static void configure(boolean forceLogToConsole, LogLevel level) {
+		LogManager.configure(forceLogToConsole, level);
 	}
 }

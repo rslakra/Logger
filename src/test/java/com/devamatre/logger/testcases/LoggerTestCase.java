@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Devamatre Inc. 2009-2018. All rights reserved.
- * 
+ *
  * This code is licensed to Devamatre under one or more contributor license 
  * agreements. The reproduction, transmission or use of this code, in source 
  * and binary forms, with or without modification, are permitted provided 
@@ -10,7 +10,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -22,66 +22,65 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *      
+ *
  * Devamatre reserves the right to modify the technical specifications and or 
  * features without any prior notice.
  *****************************************************************************/
 package com.devamatre.logger.testcases;
 
-import java.io.IOException;
-
 import com.devamatre.logger.LogLevel;
-import com.devamatre.logger.LogManager;
-import com.devamatre.logger.LogUtility;
 import com.devamatre.logger.Logger;
+import com.devamatre.logger.AbstractTestCase;
+import com.devamatre.logger.MockLogManager;
+import org.junit.jupiter.api.Test;
 
 /**
- * 
  * @author Rohtash Lakra (rohtash.lakra@devamatre.com)
  * @author Rohtash Singh Lakra (rohtash.singh@gmail.com)
- * @created 2010-08-09 2:51:50 PM
  * @version 1.0.0
+ * @created 2009-08-09 2:51:50 PM
  * @since 1.0.0
  */
-public class TestLogUtility {
-	
-	/** logger */
-	private static Logger logger = LogManager.getLogger(TestLogUtility.class);
-	
-	/**
-	 * Starting Point.
-	 * 
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String args[]) throws IOException {
-		LogUtility.setDebugEnabled(true);
-		LogUtility.printSystemProperties(false);
-		LogUtility.debug("Rohtash Singh Lakra");
-		LogUtility.info("Lakra");
-		LogUtility.warn("Singh");
-		LogUtility.printSystemProperties("System Properties", true);
-		
-		LogManager.configure(LogManager.LOG4J_XML_FILE);
-		TestLogUtility testLogUtility = new TestLogUtility();
-		testLogUtility.test();
-	}
-	
-	/**
-	 * 
-	 */
-	public void test() {
-		logger.info("+test()");
-		String[] myName = { "Rohtash", "Singh", "Lakra" };
-		logger.debug(myName);
-		String[][] names = { myName, { "Harsh", "Lakra" } };
-		logger.debug(names);
-		logger.debug(LogLevel.DEBUG);
-		logger.info(LogLevel.INFO);
-		logger.warn(LogLevel.WARN);
-		logger.error(LogLevel.ERROR);
-		logger.fatal(LogLevel.FATAL);
-		logger.info("-test()");
-	}
-	
+public class LoggerTestCase extends AbstractTestCase {
+
+    /**
+     * LOGGER
+     */
+    private static final Logger LOGGER = MockLogManager.getLogger(LoggerTestCase.class);
+
+    @Test
+    public void testFatal() {
+        LOGGER.fatal(LogLevel.FATAL);
+        LOGGER.fatal("FATAL: %s", LogLevel.FATAL);
+        assertTrue(LogLevel.of(LogLevel.FATAL.name()) == LogLevel.FATAL);
+    }
+
+    @Test
+    public void testError() {
+        LOGGER.error(LogLevel.ERROR);
+        LOGGER.error("ERROR:%s", LogLevel.ERROR);
+        assertTrue(LogLevel.of(LogLevel.ERROR.name()) == LogLevel.ERROR);
+    }
+
+    @Test
+    public void testWarn() {
+        LOGGER.warn(LogLevel.WARN);
+        LOGGER.warn("WARN:%s", LogLevel.WARN);
+        assertTrue(LogLevel.of(LogLevel.WARN.name()) == LogLevel.WARN);
+    }
+
+    @Test
+    public void testInfo() {
+        LOGGER.info(LogLevel.INFO);
+        LOGGER.info("INFO:%s", LogLevel.INFO);
+        assertTrue(LogLevel.of(LogLevel.INFO.name()) == LogLevel.INFO);
+    }
+
+    @Test
+    public void testDebug() {
+        LOGGER.debug(LogLevel.DEBUG);
+        LOGGER.debug("DEBUG:%s", LogLevel.DEBUG);
+        assertTrue(LogLevel.of(LogLevel.DEBUG.name()) == LogLevel.DEBUG);
+    }
+
 }
