@@ -44,29 +44,6 @@ public class LoggerTest {
         MockLogManager.configure(LogManager.LOG4J_PROPERTY_FILE);
     }
 
-    private Logger LOGGER;
-
-//    @PostConstruct
-//    public void init() {
-//        LOGGER.info("Initialized");
-//    }
-
-//    /**
-//     * @param args
-//     */
-//    public static void main(String[] args) {
-//        // LogManager.printSystemProperties();
-//        // LogManager.configure(LogManager.LOG4J_XML_FILE);
-//        LogManager.configure(LogManager.LOG4J_PROPERTY_FILE);
-//        // LogManager.configure(true, LogEnum.WARN);
-//        LoggerTest loggerTest = new LoggerTest();
-//        loggerTest.testLogger(true);
-//        loggerTest.testLogger(false);
-//
-//        loggerTest.testLoggerPackageTest();
-//    }
-
-
     @Test
     public void testLogger() {
         testLogger(true);
@@ -78,9 +55,9 @@ public class LoggerTest {
      * @param useNullLogger
      */
     private void testLogger(boolean useNullLogger) {
-        LogUtility.debug("+testLogger(" + useNullLogger + ")");
         // initialize logger.
-        LOGGER = LogManager.getLogger((useNullLogger ? null : LoggerTest.class));
+        final Logger LOGGER = LogManager.getLogger((useNullLogger ? null : LoggerTest.class));
+        LOGGER.info("+testLogger({})", useNullLogger);
 
         LOGGER.info("+testLogger()");
         LOGGER.info("This is My logger testing.");
@@ -88,10 +65,10 @@ public class LoggerTest {
         LOGGER.debug("My logger debug testing.");
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("LOGGER IS ENABLED ... :)");
+            LOGGER.debug("isDebugEnabled ... :)");
         }
 
-        messages();
+        messages(LOGGER);
 
         LOGGER.error("My Logger error testing");
         LOGGER.fatal("My Logger Fatal Testing.");
@@ -100,7 +77,7 @@ public class LoggerTest {
             LOGGER.info("Debugging Enabled!");
         }
 
-        messages3();
+        messages3(LOGGER);
 
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Info Enabled!");
@@ -110,12 +87,10 @@ public class LoggerTest {
         testLoggerPackageTest();
 
         try {
-            throwException();
+            throwException(LOGGER);
         } catch (Exception e) {
             LOGGER.error("Error!!!", e);
         }
-
-        LOGGER.info("-testLogger()");
 
         LOGGER.info("Starting TestLogUtility");
         LoggerTest loggerTest = new LoggerTest();
@@ -126,58 +101,58 @@ public class LoggerTest {
     }
 
     /**
-     *
+     * @param LOGGER
      */
-    private void messages() {
-        LOGGER.info("+messages");
-        LOGGER.info("messages Method Call!");
-        messages1();
+    private void messages(final Logger LOGGER) {
+        LOGGER.info("+messages({})", LOGGER);
+        LOGGER.info("LOGGER: {}", LOGGER);
+        messages1(LOGGER);
         LOGGER.info("-messages");
     }
 
     /**
-     *
+     * @param LOGGER
      */
-    private void messages1() {
-        LOGGER.info("+messages1");
+    private void messages1(final Logger LOGGER) {
+        LOGGER.info("+messages1({})", LOGGER);
         LOGGER.info("messages1 Method Call!");
-        messages2();
-        messages5();
+        messages2(LOGGER);
+        messages5(LOGGER);
         LOGGER.info("-messages1");
     }
 
     /**
-     *
+     * @param LOGGER
      */
-    private void messages2() {
-        LOGGER.info("+messages2");
+    private void messages2(final Logger LOGGER) {
+        LOGGER.info("+messages2({})", LOGGER);
         LOGGER.info("messages2 Method Call!");
         LOGGER.info("-messages2");
     }
 
     /**
-     *
+     * @param LOGGER
      */
-    private void messages3() {
-        LOGGER.info("+messages3");
+    private void messages3(final Logger LOGGER) {
+        LOGGER.info("+messages3({})", LOGGER);
         LOGGER.info("messages3 Method Call!");
         LOGGER.info("-messages3");
     }
 
     /**
-     *
+     * @param LOGGER
      */
-    private void messages4() {
-        LOGGER.info("messages4 Method Call!");
+    private void messages4(final Logger LOGGER) {
+        LOGGER.info("messages4({})", LOGGER);
     }
 
     /**
-     *
+     * @param LOGGER
      */
-    private void messages5() {
-        LOGGER.info("messages5 Method Call!");
-        messages3();
-        messages4();
+    private void messages5(final Logger LOGGER) {
+        LOGGER.info("messages5({})", LOGGER);
+        messages3(LOGGER);
+        messages4(LOGGER);
     }
 
     /**
@@ -185,7 +160,8 @@ public class LoggerTest {
      *
      * @throws Exception
      */
-    private void throwException() throws Exception {
+    private void throwException(final Logger LOGGER) throws Exception {
+        LOGGER.warn("throwException({})", LOGGER);
         throw new IllegalArgumentException("Exception Testing!");
     }
 
@@ -194,11 +170,16 @@ public class LoggerTest {
      */
     public void testLoggerPackageTest() {
         // initialize logger.
-        LOGGER = LogManager.getLogger(LoggerTest.class);
+        final Logger LOGGER = LogManager.getLogger(LoggerTest.class);
         LOGGER.debug(LogLevel.DEBUG);
+        LOGGER.debug("DEBUG :{}", LogLevel.DEBUG);
         LOGGER.info(LogLevel.INFO);
+        LOGGER.info("INFO :{}", LogLevel.INFO);
         LOGGER.warn(LogLevel.WARN);
+        LOGGER.warn("WARN :{}", LogLevel.WARN);
         LOGGER.error(LogLevel.ERROR);
+        LOGGER.error("ERROR :{}", LogLevel.ERROR);
         LOGGER.fatal(LogLevel.FATAL);
+        LOGGER.fatal("FATAL :{}", LogLevel.FATAL);
     }
 }

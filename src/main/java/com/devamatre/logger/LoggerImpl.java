@@ -191,6 +191,7 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void fatal(String format, Object... arguments) {
+//        LogTuple logTuple = LogFormatter.arrayFormat(format, arguments);
         this.fatal(String.format(format, arguments));
     }
 
@@ -422,8 +423,9 @@ public final class LoggerImpl implements Logger {
      * @param arguments
      */
     @Override
-    public void debug(String format, Object... arguments) {
-        this.debug(String.format(format, arguments));
+    public void debug(final String format, final Object... arguments) {
+        LogTuple logTuple = LogFormatter.arrayFormat(format, arguments);
+        this.debug(String.format(logTuple.getMessage(), logTuple.getArguments()), logTuple.getThrowable());
     }
 
     /**
@@ -433,7 +435,8 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void debug(Throwable throwable, String format, Object... arguments) {
-        this.debug(String.format(format, arguments), throwable);
+        LogTuple logTuple = LogFormatter.arrayFormat(format, arguments, throwable);
+        this.debug(String.format(logTuple.getMessage(), logTuple.getArguments()), logTuple.getThrowable());
     }
 
     /**

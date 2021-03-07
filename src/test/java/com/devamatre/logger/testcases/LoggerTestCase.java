@@ -28,9 +28,9 @@
  *****************************************************************************/
 package com.devamatre.logger.testcases;
 
+import com.devamatre.logger.AbstractTestCase;
 import com.devamatre.logger.LogLevel;
 import com.devamatre.logger.Logger;
-import com.devamatre.logger.AbstractTestCase;
 import com.devamatre.logger.MockLogManager;
 import org.junit.jupiter.api.Test;
 
@@ -51,35 +51,35 @@ public class LoggerTestCase extends AbstractTestCase {
     @Test
     public void testFatal() {
         LOGGER.fatal(LogLevel.FATAL);
-        LOGGER.fatal("FATAL: %s", LogLevel.FATAL);
+        LOGGER.fatal("FATAL: {}", LogLevel.FATAL);
         assertTrue(LogLevel.of(LogLevel.FATAL.name()) == LogLevel.FATAL);
     }
 
     @Test
     public void testError() {
         LOGGER.error(LogLevel.ERROR);
-        LOGGER.error("ERROR:%s", LogLevel.ERROR);
+        LOGGER.error("ERROR: {}", LogLevel.ERROR);
         assertTrue(LogLevel.of(LogLevel.ERROR.name()) == LogLevel.ERROR);
     }
 
     @Test
     public void testWarn() {
         LOGGER.warn(LogLevel.WARN);
-        LOGGER.warn("WARN:%s", LogLevel.WARN);
+        LOGGER.warn("WARN: {}", LogLevel.WARN);
         assertTrue(LogLevel.of(LogLevel.WARN.name()) == LogLevel.WARN);
     }
 
     @Test
     public void testInfo() {
         LOGGER.info(LogLevel.INFO);
-        LOGGER.info("INFO:%s", LogLevel.INFO);
+        LOGGER.info("INFO: {}", LogLevel.INFO);
         assertTrue(LogLevel.of(LogLevel.INFO.name()) == LogLevel.INFO);
     }
 
     @Test
     public void testDebug() {
         LOGGER.debug(LogLevel.DEBUG);
-        LOGGER.debug("DEBUG:%s", LogLevel.DEBUG);
+        LOGGER.debug("DEBUG: {}", LogLevel.DEBUG);
         assertTrue(LogLevel.of(LogLevel.DEBUG.name()) == LogLevel.DEBUG);
     }
 

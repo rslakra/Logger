@@ -700,4 +700,41 @@ public final class LogUtility {
         }
     }
 
+    /**
+     * Returns all objects excluding the last element.
+     *
+     * @param objects
+     * @return
+     */
+    public static Object[] arrayCopyExcludingLastElement(final Object[] objects) {
+        if (isNullOrEmpty(objects)) {
+            throw new IllegalStateException("Either empty or null array!");
+        }
+
+        final int trimmedLength = objects.length - 1;
+        Object[] arrayTrimmed = new Object[trimmedLength];
+        if (trimmedLength > 0) {
+            System.arraycopy(objects, 0, arrayTrimmed, 0, trimmedLength);
+        }
+
+        return arrayTrimmed;
+    }
+
+    /**
+     * Returns the {@link Throwable} if an {@link Object} array contains as a last element otherwise null.
+     *
+     * @param objects
+     * @return
+     */
+    public static Throwable getThrowableIfContains(final Object[] objects) {
+        if (!isNullOrEmpty(objects)) {
+            final Object lastEntry = objects[objects.length - 1];
+            if (lastEntry instanceof Throwable) {
+                return (Throwable) lastEntry;
+            }
+        }
+
+        return null;
+    }
+
 }
