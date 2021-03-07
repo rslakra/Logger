@@ -706,18 +706,18 @@ public final class LogUtility {
      * @param objects
      * @return
      */
-    public static Object[] arrayCopyExcludingLastElement(final Object[] objects) {
+    public static Object[] arrayCopyWithoutThrowable(final Object[] objects) {
         if (isNullOrEmpty(objects)) {
             throw new IllegalStateException("Either empty or null array!");
         }
 
-        final int trimmedLength = objects.length - 1;
-        Object[] arrayTrimmed = new Object[trimmedLength];
-        if (trimmedLength > 0) {
-            System.arraycopy(objects, 0, arrayTrimmed, 0, trimmedLength);
+        final int argsLength = objects.length - 1;
+        Object[] arguments = new Object[argsLength];
+        if (argsLength > 0) {
+            System.arraycopy(objects, 0, arguments, 0, argsLength);
         }
 
-        return arrayTrimmed;
+        return arguments;
     }
 
     /**

@@ -9,18 +9,9 @@ package com.devamatre.logger;
  */
 public class LogTuple {
 
-    public static LogTuple NULL_TUPLE = new LogTuple(null);
-
     private final String message;
     private final Object[] arguments;
     private final Throwable throwable;
-
-    /**
-     * @param message
-     */
-    public LogTuple(final String message) {
-        this(message, null, null);
-    }
 
     /**
      * @param message
@@ -39,6 +30,13 @@ public class LogTuple {
      */
     public LogTuple(final String message, final Object[] arguments) {
         this(message, arguments, null);
+    }
+
+    /**
+     * @param message
+     */
+    public LogTuple(final String message) {
+        this(message, null, null);
     }
 
     /**
@@ -66,6 +64,14 @@ public class LogTuple {
      */
     public Throwable getThrowable() {
         return throwable;
+    }
+
+    /**
+     * @return
+     */
+    public final String toMessage() {
+        String logString = getMessage().replace("{}", "%s");
+        return String.format(logString, getArguments());
     }
 
 }

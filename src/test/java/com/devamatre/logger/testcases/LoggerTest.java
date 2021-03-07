@@ -172,14 +172,14 @@ public class LoggerTest {
         // initialize logger.
         final Logger LOGGER = LogManager.getLogger(LoggerTest.class);
         LOGGER.debug(LogLevel.DEBUG);
-        LOGGER.debug("DEBUG :{}", LogLevel.DEBUG);
+        LOGGER.debug("DEBUG: {}", LogLevel.DEBUG);
         LOGGER.info(LogLevel.INFO);
-        LOGGER.info("INFO :{}", LogLevel.INFO);
+        LOGGER.info("INFO: {}", LogLevel.INFO);
         LOGGER.warn(LogLevel.WARN);
-        LOGGER.warn("WARN :{}", LogLevel.WARN);
+        LOGGER.warn("WARN: {}", LogLevel.WARN);
         LOGGER.error(LogLevel.ERROR);
-        LOGGER.error("ERROR :{}", LogLevel.ERROR);
+        LOGGER.error("ERROR: {}", LogLevel.ERROR);
         LOGGER.fatal(LogLevel.FATAL);
-        LOGGER.fatal("FATAL :{}", LogLevel.FATAL);
+        LOGGER.fatal("FATAL: {}", LogLevel.FATAL);
     }
 }

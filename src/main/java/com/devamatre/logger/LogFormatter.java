@@ -11,67 +11,8 @@ import java.util.Map;
 public final class LogFormatter {
 
     private static final char START_DELIMITER = '{';
-    private static final char STOP_DELIMITER = '}';
     private static final String DELIMITER_PAIR = "{}";
     private static final char ESCAPE_CHAR = '\\';
-
-    /**
-     * Returns the <code>LogTuple</code> for the provided <code>messagePattern</code> and
-     * <code>argument</code> parameters.
-     *
-     * @param messagePattern
-     * @param argument
-     * @return
-     */
-    public static final LogTuple format(final String messagePattern, final Object argument) {
-        return arrayFormat(messagePattern, new Object[]{argument});
-    }
-
-    /**
-     * Returns the <code>LogTuple</code> for the provided <code>messagePattern</code>, <code>argument</code> and
-     * <code>throwable</code>  parameters.
-     *
-     * @param messagePattern
-     * @param argument
-     * @param throwable
-     * @return
-     */
-    public static final LogTuple format(final String messagePattern, Object argument, Object throwable) {
-        return arrayFormat(messagePattern, new Object[]{argument, throwable});
-    }
-
-    /**
-     * @param messagePattern
-     * @param arguments
-     * @return
-     */
-    public static final LogTuple arrayFormat(final String messagePattern, final Object[] arguments) {
-        Throwable throwable = LogUtility.getThrowableIfContains(arguments);
-        Object[] args = arguments;
-        if (throwable != null) {
-            args = LogUtility.arrayCopyExcludingLastElement(arguments);
-        }
-
-        return arrayFormat(messagePattern, args, throwable);
-    }
-
-    /**
-     * Assumes that objects only contains arguments with no throwable as last element.
-     *
-     * @param messagePattern
-     * @param arguments
-     */
-    public static final String basicArrayFormat(final String messagePattern, final Object[] arguments) {
-        return arrayFormat(messagePattern, arguments, null).getMessage();
-    }
-
-    /**
-     * @param logTuple
-     * @return
-     */
-    public static final String basicArrayFormat(final LogTuple logTuple) {
-        return basicArrayFormat(logTuple.getMessage(), logTuple.getArguments());
-    }
 
     /**
      * @param messagePattern
@@ -79,55 +20,55 @@ public final class LogFormatter {
      * @param throwable
      * @return
      */
-    public static final LogTuple arrayFormat(final String messagePattern, final Object[] objects, Throwable throwable) {
+    public static final LogTuple logFormatter(final String messagePattern, final Object[] objects, Throwable throwable) {
         if (LogUtility.isNull(messagePattern)) {
             return new LogTuple(null, objects, throwable);
         }
 
-        if (objects == null) {
+        if (LogUtility.isNullOrEmpty(objects)) {
             return new LogTuple(messagePattern);
         }
 
-        int i = 0;
-        int j;
+        int fromIndex = 0;
+        int pairIndex;
         // use string builder for better performance
         final StringBuilder sBuilder = new StringBuilder(messagePattern.length() + 100);
         for (int index = 0; index < objects.length; index++) {
-            j = messagePattern.indexOf(DELIMITER_PAIR, i);
-            if (j == -1) {
+            pairIndex = messagePattern.indexOf(DELIMITER_PAIR, fromIndex);
+            if (pairIndex == -1) {
                 // no more variables
-                if (i == 0) { // this is a simple string
+                if (fromIndex == 0) { // this is a simple string
                     return new LogTuple(messagePattern, objects, throwable);
                 } else { // add the tail string which contains no variables and return
                     // the result.
-                    sBuilder.append(messagePattern, i, messagePattern.length());
+                    sBuilder.append(messagePattern, fromIndex, messagePattern.length());
                     return new LogTuple(sBuilder.toString(), objects, throwable);
                 }
             } else {
-                if (isDelimiterEscaped(messagePattern, j)) {
-                    if (!isDoubleEscaped(messagePattern, j)) {
+                if (isDelimiterEscaped(messagePattern, pairIndex)) {
+                    if (!isDoubleEscaped(messagePattern, pairIndex)) {
                         index--; // START_DELIMITER was escaped, thus should not be incremented
-                        sBuilder.append(messagePattern, i, j - 1);
+                        sBuilder.append(messagePattern, fromIndex, pairIndex - 1);
                         sBuilder.append(START_DELIMITER);
-                        i = j + 1;
+                        fromIndex = pairIndex + 1;
                     } else {
                         // The escape character preceding the delimiter start is
                         // itself escaped: "message x:\\{}", so consume one backward slash
-                        sBuilder.append(messagePattern, i, j - 1);
+                        sBuilder.append(messagePattern, fromIndex, pairIndex - 1);
                         deeplyAppendParameter(sBuilder, objects[index], new HashMap<Object[], Object>());
-                        i = j + 2;
+                        fromIndex = pairIndex + 2;
                     }
                 } else {
                     // normal case
-                    sBuilder.append(messagePattern, i, j);
+                    sBuilder.append(messagePattern, fromIndex, pairIndex);
                     deeplyAppendParameter(sBuilder, objects[index], new HashMap<Object[], Object>());
-                    i = j + 2;
+                    fromIndex = pairIndex + 2;
                 }
             }
         }
 
         // append the characters following the last {} pair.
-        sBuilder.append(messagePattern, i, messagePattern.length());
+        sBuilder.append(messagePattern, fromIndex, messagePattern.length());
         return new LogTuple(sBuilder.toString(), objects, throwable);
     }
 
@@ -353,28 +294,68 @@ public final class LogFormatter {
 
     /**
      * Normalizes the logging parameters. If a throwable argument is not provided directly, it
-     * attempts to extract it from the argument array.
+     * attempts to extract it from the arguments array.
      *
-     * @param message
+     * @param messagePattern
      * @param arguments
      * @param throwable
      * @return
      */
-    public static LogTuple normalize(String message, Object[] arguments, Throwable throwable) {
-        if (throwable != null) {
-            return new LogTuple(message, arguments, throwable);
-        }
-
-        if (LogUtility.isNullOrEmpty(arguments)) {
-            return new LogTuple(message, arguments, throwable);
-        }
-
-        Throwable throwableCandidate = LogUtility.getThrowableIfContains(arguments);
-        if (throwableCandidate != null) {
-            Object[] trimmedArguments = LogUtility.arrayCopyExcludingLastElement(arguments);
-            return new LogTuple(message, trimmedArguments, throwableCandidate);
+    public static LogTuple normalize(final String messagePattern, Object[] arguments, Throwable throwable) {
+        if (LogUtility.isNotNull(throwable)) {
+            return new LogTuple(messagePattern, arguments, throwable);
+        } else if (LogUtility.isNotNullOrEmpty(arguments)) {
+            throwable = LogUtility.getThrowableIfContains(arguments);
+            if (LogUtility.isNotNull(throwable)) {
+                // TODO: Check if truncate the message also or not.
+//                arguments = LogUtility.arrayCopyWithoutThrowable(arguments);
+                return new LogTuple(messagePattern, arguments, throwable);
+            } else {
+                return new LogTuple(messagePattern, arguments);
+            }
         } else {
-            return new LogTuple(message, arguments);
+            return new LogTuple(messagePattern);
         }
     }
+
+    /**
+     * @param messagePattern
+     * @param arguments
+     * @return
+     */
+    public static LogTuple normalize(final String messagePattern, Object... arguments) {
+        return normalize(messagePattern, arguments, null);
+    }
+
+    /**
+     * Returns the <code>LogTuple</code> for the provided <code>messagePattern</code>, <code>argument</code> and
+     * <code>throwable</code>  parameters.
+     *
+     * @param messagePattern
+     * @param argument
+     * @param throwable
+     * @return
+     */
+    public static LogTuple format(final String messagePattern, Object argument, Object throwable) {
+        return logFormatter(messagePattern, new Object[]{argument, throwable}, null);
+    }
+
+    /**
+     * Assumes that objects only contains arguments with no throwable as last element.
+     *
+     * @param messagePattern
+     * @param arguments
+     */
+    public static String format(final String messagePattern, final Object[] arguments) {
+        return logFormatter(messagePattern, arguments, null).toMessage();
+    }
+
+    /**
+     * @param logTuple
+     * @return
+     */
+    public static String format(final LogTuple logTuple) {
+        return logFormatter(logTuple.getMessage(), logTuple.getArguments(), logTuple.getThrowable()).toMessage();
+    }
+
 }

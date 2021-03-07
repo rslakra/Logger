@@ -121,7 +121,7 @@ public final class LoggerImpl implements Logger {
      * @param object
      * @return object to be logged.
      */
-    private Object getIndents(Object object) {
+    private Object getIndents(final Object object) {
         return getIndents(object, supportIndentation);
     }
 
@@ -132,7 +132,7 @@ public final class LoggerImpl implements Logger {
      * @param indentation
      * @return
      */
-    private Object getIndents(Object object, boolean indentation) {
+    private Object getIndents(Object object, final boolean indentation) {
         LogUtility.debug("+getIndents(" + object + ", " + indentation + ")");
 
         /* check indentation supported or not. */
@@ -158,7 +158,7 @@ public final class LoggerImpl implements Logger {
      * @see com.devamatre.logger.Logger#fatal(java.lang.Object)
      */
     @Override
-    public void fatal(Object object) {
+    public void fatal(final Object object) {
         if (isFatalEnabled()) {
             rootLogger.fatal(getIndents(object));
         }
@@ -179,7 +179,7 @@ public final class LoggerImpl implements Logger {
      * java.lang.Throwable)
      */
     @Override
-    public void fatal(Object object, Throwable throwable) {
+    public void fatal(final Object object, final Throwable throwable) {
         if (isFatalEnabled()) {
             rootLogger.fatal(getIndents(object), throwable);
         }
@@ -190,9 +190,9 @@ public final class LoggerImpl implements Logger {
      * @param arguments
      */
     @Override
-    public void fatal(String format, Object... arguments) {
-//        LogTuple logTuple = LogFormatter.arrayFormat(format, arguments);
-        this.fatal(String.format(format, arguments));
+    public void fatal(final String format, final Object... arguments) {
+        LogTuple logTuple = LogFormatter.normalize(format, arguments);
+        this.fatal(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -201,8 +201,9 @@ public final class LoggerImpl implements Logger {
      * @param arguments
      */
     @Override
-    public void fatal(Throwable throwable, String format, Object... arguments) {
-        this.fatal(String.format(format, arguments), throwable);
+    public void fatal(final Throwable throwable, final String format, final Object... arguments) {
+        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
+        this.fatal(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -217,7 +218,7 @@ public final class LoggerImpl implements Logger {
      * @see com.devamatre.logger.Logger#error(java.lang.Object)
      */
     @Override
-    public void error(Object object) {
+    public void error(final Object object) {
         if (isErrorEnabled()) {
             rootLogger.error(getIndents(object));
         }
@@ -238,7 +239,7 @@ public final class LoggerImpl implements Logger {
      * java.lang.Throwable)
      */
     @Override
-    public void error(Object object, Throwable throwable) {
+    public void error(final Object object, final Throwable throwable) {
         if (isErrorEnabled()) {
             rootLogger.error(getIndents(object), throwable);
         }
@@ -249,8 +250,9 @@ public final class LoggerImpl implements Logger {
      * @param arguments
      */
     @Override
-    public void error(String format, Object... arguments) {
-        this.error(String.format(format, arguments));
+    public void error(final String format, final Object... arguments) {
+        LogTuple logTuple = LogFormatter.normalize(format, arguments);
+        this.error(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -259,8 +261,9 @@ public final class LoggerImpl implements Logger {
      * @param arguments
      */
     @Override
-    public void error(Throwable throwable, String format, Object... arguments) {
-        this.error(String.format(format, arguments), throwable);
+    public void error(final Throwable throwable, final String format, final Object... arguments) {
+        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
+        this.error(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -275,7 +278,7 @@ public final class LoggerImpl implements Logger {
      * @see com.devamatre.logger.Logger#warn(java.lang.Object)
      */
     @Override
-    public void warn(Object object) {
+    public void warn(final Object object) {
         if (isWarnEnabled()) {
             rootLogger.warn(getIndents(object));
         }
@@ -296,7 +299,7 @@ public final class LoggerImpl implements Logger {
      * java.lang.Throwable)
      */
     @Override
-    public void warn(Object object, Throwable throwable) {
+    public void warn(final Object object, final Throwable throwable) {
         if (isWarnEnabled()) {
             rootLogger.warn(getIndents(object), throwable);
         }
@@ -307,8 +310,9 @@ public final class LoggerImpl implements Logger {
      * @param arguments
      */
     @Override
-    public void warn(String format, Object... arguments) {
-        this.warn(String.format(format, arguments));
+    public void warn(final String format, final Object... arguments) {
+        LogTuple logTuple = LogFormatter.normalize(format, arguments);
+        this.warn(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -317,8 +321,9 @@ public final class LoggerImpl implements Logger {
      * @param arguments
      */
     @Override
-    public void warn(Throwable throwable, String format, Object... arguments) {
-        this.warn(String.format(format, arguments), throwable);
+    public void warn(final Throwable throwable, final String format, final Object... arguments) {
+        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
+        this.warn(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -333,7 +338,7 @@ public final class LoggerImpl implements Logger {
      * @see com.devamatre.logger.Logger#info(java.lang.Object)
      */
     @Override
-    public void info(Object object) {
+    public void info(final Object object) {
         if (isInfoEnabled()) {
             rootLogger.info(getIndents(object));
         }
@@ -354,7 +359,7 @@ public final class LoggerImpl implements Logger {
      * java.lang.Throwable)
      */
     @Override
-    public void info(Object object, Throwable throwable) {
+    public void info(final Object object, final Throwable throwable) {
         if (isInfoEnabled()) {
             rootLogger.info(getIndents(object), throwable);
         }
@@ -365,8 +370,9 @@ public final class LoggerImpl implements Logger {
      * @param arguments
      */
     @Override
-    public void info(String format, Object... arguments) {
-        this.info(String.format(format, arguments));
+    public void info(final String format, final Object... arguments) {
+        LogTuple logTuple = LogFormatter.normalize(format, arguments);
+        this.info(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -375,8 +381,9 @@ public final class LoggerImpl implements Logger {
      * @param arguments
      */
     @Override
-    public void info(Throwable throwable, String format, Object... arguments) {
-        this.info(String.format(format, arguments), throwable);
+    public void info(final Throwable throwable, final String format, final Object... arguments) {
+        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
+        this.info(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -391,7 +398,7 @@ public final class LoggerImpl implements Logger {
      * @see com.devamatre.logger.Logger#debug(java.lang.Object)
      */
     @Override
-    public void debug(Object object) {
+    public void debug(final Object object) {
         if (isDebugEnabled()) {
             rootLogger.debug(getIndents(object));
         }
@@ -412,7 +419,7 @@ public final class LoggerImpl implements Logger {
      * java.lang.Throwable)
      */
     @Override
-    public void debug(Object object, Throwable throwable) {
+    public void debug(final Object object, final Throwable throwable) {
         if (isDebugEnabled()) {
             rootLogger.debug(getIndents(object), throwable);
         }
@@ -424,8 +431,8 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void debug(final String format, final Object... arguments) {
-        LogTuple logTuple = LogFormatter.arrayFormat(format, arguments);
-        this.debug(String.format(logTuple.getMessage(), logTuple.getArguments()), logTuple.getThrowable());
+        LogTuple logTuple = LogFormatter.normalize(format, arguments);
+        this.debug(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -434,9 +441,9 @@ public final class LoggerImpl implements Logger {
      * @param arguments
      */
     @Override
-    public void debug(Throwable throwable, String format, Object... arguments) {
-        LogTuple logTuple = LogFormatter.arrayFormat(format, arguments, throwable);
-        this.debug(String.format(logTuple.getMessage(), logTuple.getArguments()), logTuple.getThrowable());
+    public void debug(final Throwable throwable, final String format, final Object... arguments) {
+        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
+        this.debug(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
