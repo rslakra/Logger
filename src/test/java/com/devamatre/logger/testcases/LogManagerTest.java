@@ -28,30 +28,55 @@
  *****************************************************************************/
 package com.devamatre.logger.testcases;
 
-import org.junit.jupiter.api.Tag;
+import com.devamatre.logger.*;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * @author Rohtash Lakra (rslakra.work@gmail.com)
+ * @author Rohtash Lakra (rohtash.lakra@devamatre.com)
+ * @author Rohtash Singh Lakra (rohtash.singh@gmail.com)
  * @version 1.0.0
- * @since Mar 06, 2021 17:12:25
+ * @since Mar 13, 2021 18:07:23
  */
-public class JUnit5TagTest {
+public class LogManagerTest {
 
-    @Tag("slow")
     @Test
-    public void testAddMaxInteger() {
-        assertEquals(2147383646, Integer.sum(2147183646, 200000));
+    public void testGetNullLogger() {
+        final Logger logger = LogManager.getLogger(null);
+        assertNotNull(logger);
+        assertEquals(NullLogger.class, logger.getClass());
     }
 
-    @Tag("fast")
     @Test
-    public void testDivideByZero() {
-        assertThrows(ArithmeticException.class, () -> {
-            Integer.divideUnsigned(16, 0);
-        });
+    public void testGetLogger() {
+        final Logger logger = LogManager.getLogger(LogManagerTest.class);
+        assertNotNull(logger);
+        assertEquals(LoggerImpl.class, logger.getClass());
     }
+
+    @Test
+    public void testGetDefaultConfigPath() {
+        String defaultConfigPath = LogManager.getDefaultConfigPath(false);
+        assertTrue(LogUtility.isNotNullOrEmpty(defaultConfigPath));
+        assertEquals(LogUtility.USER_DIR, defaultConfigPath);
+    }
+
+    @Test
+    public void testGetDefaultAbsoluteConfigPath() {
+        String defaultConfigPath = LogManager.getDefaultConfigPath(true);
+        assertTrue(LogUtility.isNotNullOrEmpty(defaultConfigPath));
+        assertNotEquals(LogUtility.USER_DIR, defaultConfigPath);
+        assertTrue(defaultConfigPath.endsWith("com/devamatre/logger"));
+    }
+
+    @Test
+    public void testConfigure() {
+        LogManager.configure("testLog4j.properties");
+        final Logger logger = LogManager.getLogger(null);
+        assertNotNull(logger);
+        assertEquals(NullLogger.class, logger.getClass());
+        logger.info("Configure (testLog4j) logger.");
+    }
+
 }

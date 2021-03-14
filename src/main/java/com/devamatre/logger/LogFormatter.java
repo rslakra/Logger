@@ -143,21 +143,21 @@ public final class LogFormatter {
     /**
      * @param sBuilder
      * @param objects
-     * @param seenMap
+     * @param visitedMap
      */
-    private static void appendObjects(final StringBuilder sBuilder, Object[] objects, Map<Object[], Object> seenMap) {
+    private static void appendObjects(final StringBuilder sBuilder, final Object[] objects, final Map<Object[], Object> visitedMap) {
         sBuilder.append('[');
-        if (!seenMap.containsKey(objects)) {
-            seenMap.put(objects, null);
+        if (!visitedMap.containsKey(objects)) {
+            visitedMap.put(objects, null);
             final int len = objects.length;
             for (int i = 0; i < len; i++) {
-                deeplyAppendParameter(sBuilder, objects[i], seenMap);
+                deeplyAppendParameter(sBuilder, objects[i], visitedMap);
                 if (i != len - 1) {
                     sBuilder.append(", ");
                 }
             }
             // allow repeats in siblings
-            seenMap.remove(objects);
+            visitedMap.remove(objects);
         } else {
             sBuilder.append("...");
         }

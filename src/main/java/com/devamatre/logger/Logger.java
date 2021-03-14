@@ -28,8 +28,6 @@
  *****************************************************************************/
 package com.devamatre.logger;
 
-import org.apache.log4j.Level;
-
 /**
  * The <code>Logger</code> interface defines all the generic logging methods. It
  * delegates the calls to <code>org.apache.log4j.Category</code>.
@@ -58,7 +56,7 @@ public interface Logger {
     /**
      * FATAL - 5
      * <p>
-     * Logs a message object with the {@link Level#FATAL FATAL} Level. It
+     * Logs a message object with the {@link org.apache.log4j.Level#FATAL FATAL} Level. It
      * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
@@ -98,7 +96,7 @@ public interface Logger {
     /**
      * ERROR - 4
      * <p>
-     * Logs a message object with the {@link Level#ERROR ERROR} Level. It
+     * Logs a message object with the {@link org.apache.log4j.Level#ERROR ERROR} Level. It
      * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
@@ -138,7 +136,7 @@ public interface Logger {
     /**
      * WARN - 3
      * <p>
-     * Logs a message object with the {@link Level#WARN WARN} Level. It
+     * Logs a message object with the {@link org.apache.log4j.Level#WARN WARN} Level. It
      * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
@@ -178,7 +176,7 @@ public interface Logger {
     /**
      * INFO - 2
      * <p>
-     * Logs a message object with the {@link Level#INFO INFO} Level. It
+     * Logs a message object with the {@link org.apache.log4j.Level#INFO INFO} Level. It
      * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
@@ -218,7 +216,7 @@ public interface Logger {
     /**
      * DEBUG - 1
      * <p>
-     * Logs a message object with the {@link Level#DEBUG DEBUG} Level. It
+     * Logs a message object with the {@link org.apache.log4j.Level#DEBUG DEBUG} Level. It
      * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>

@@ -1,9 +1,9 @@
 /******************************************************************************
  * Copyright (C) Devamatre Inc. 2009-2018. All rights reserved.
  *
- * This code is licensed to Devamatre under one or more contributor license 
- * agreements. The reproduction, transmission or use of this code, in source 
- * and binary forms, with or without modification, are permitted provided 
+ * This code is licensed to Devamatre under one or more contributor license
+ * agreements. The reproduction, transmission or use of this code, in source
+ * and binary forms, with or without modification, are permitted provided
  * that the following conditions are met:
  * 1. Redistributions of source code must retain the above copyright
  * 	  notice, this list of conditions and the following disclaimer.
@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Devamatre reserves the right to modify the technical specifications and or 
+ * Devamatre reserves the right to modify the technical specifications and or
  * features without any prior notice.
  *****************************************************************************/
 package com.devamatre.logger.testcases;
@@ -38,8 +38,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Rohtash Lakra (rohtash.lakra@devamatre.com)
@@ -49,8 +48,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @since 1.0.0
  */
 public class LogUtilityTest {
-
-//    private static Logr LOGGER = LogManager.getLogger(LogUtilityTest.class);
 
     @Test
     public void testIsNull() {
@@ -155,5 +152,126 @@ public class LogUtilityTest {
         String logString = LogUtility.toString(new RuntimeException("toString"));
         LogUtility.printLineWithHeading(logString, '-', 20);
         assertTrue(logString.contains("java.lang.RuntimeException: toString"));
+    }
+
+    @Test
+    public void testIsArray() {
+        assertFalse(LogUtility.isArray(null));
+        assertTrue(LogUtility.isArray(new Object[]{}));
+        assertTrue(LogUtility.isArray(new int[][]{}));
+        assertTrue(LogUtility.isArray(new ArrayList[]{}));
+    }
+
+    @Test
+    public void testIsPrimitiveArray() {
+        assertFalse(LogUtility.isPrimitiveArray(null));
+        assertFalse(LogUtility.isPrimitiveArray(new Object[]{"Rohtash", "Lakra"}));
+        assertTrue(LogUtility.isPrimitiveArray(new boolean[]{true}));
+        assertTrue(LogUtility.isPrimitiveArray(new byte[]{1}));
+        assertTrue(LogUtility.isPrimitiveArray(new char[]{'r'}));
+        assertTrue(LogUtility.isPrimitiveArray(new short[]{1}));
+        assertTrue(LogUtility.isPrimitiveArray(new int[]{197401}));
+        assertTrue(LogUtility.isPrimitiveArray(new float[]{1974.01f}));
+        assertTrue(LogUtility.isPrimitiveArray(new long[]{2000, 1974}));
+        assertTrue(LogUtility.isPrimitiveArray(new double[]{1974.01}));
+    }
+
+    @Test
+    public void testIsByteArray() {
+        assertFalse(LogUtility.isPrimitiveArray(null));
+        assertFalse(LogUtility.isPrimitiveArray(new Object[]{}));
+        assertTrue(LogUtility.isPrimitiveArray(new byte[]{}));
+    }
+
+    @Test
+    public void testIsBooleanArray() {
+        assertFalse(LogUtility.isPrimitiveArray(null));
+        assertFalse(LogUtility.isPrimitiveArray(new Object[]{1, 2}));
+        assertTrue(LogUtility.isPrimitiveArray(new boolean[]{true}));
+    }
+
+    @Test
+    public void testIsShortArray() {
+        assertFalse(LogUtility.isPrimitiveArray(null));
+        assertFalse(LogUtility.isPrimitiveArray(new Object[]{1, 2}));
+        assertTrue(LogUtility.isPrimitiveArray(new short[]{1, 2}));
+    }
+
+
+    @Test
+    public void testIsCharArray() {
+        assertFalse(LogUtility.isPrimitiveArray(null));
+        assertFalse(LogUtility.isPrimitiveArray(new Object[]{false}));
+        assertTrue(LogUtility.isPrimitiveArray(new char[]{'r'}));
+    }
+
+
+    @Test
+    public void testIsIntArray() {
+        assertFalse(LogUtility.isPrimitiveArray(null));
+        assertFalse(LogUtility.isPrimitiveArray(new Object[]{}));
+        assertTrue(LogUtility.isPrimitiveArray(new int[]{1}));
+    }
+
+    @Test
+    public void testIsFloatArray() {
+        assertFalse(LogUtility.isPrimitiveArray(null));
+        assertFalse(LogUtility.isPrimitiveArray(new Object[]{}));
+        assertTrue(LogUtility.isPrimitiveArray(new float[]{1.0f}));
+    }
+
+    @Test
+    public void testIsDoubleArray() {
+        assertFalse(LogUtility.isPrimitiveArray(null));
+        assertFalse(LogUtility.isPrimitiveArray(new Object[]{false}));
+        assertTrue(LogUtility.isPrimitiveArray(new double[]{1.0d}));
+    }
+
+    @Test
+    public void testIsLongArray() {
+        assertFalse(LogUtility.isPrimitiveArray(null));
+        assertFalse(LogUtility.isPrimitiveArray(new Object[]{false}));
+        assertTrue(LogUtility.isPrimitiveArray(new long[]{1}));
+    }
+
+    @Test
+    public void testToArray() {
+        Object object = null;
+        Object[] result = null;
+        result = LogUtility.toArray(object);
+        assertNull(result);
+        assertFalse(LogUtility.isArray(result));
+
+        // char array
+        object = new char[]{'r', 's', 'l'};
+        result = LogUtility.toArray(object);
+        assertNotNull(result);
+        assertTrue(LogUtility.isArray(result));
+        assertEquals(Character.class, result[0].getClass());
+        assertEquals(3, result.length);
+
+        // boolean array
+        object = new boolean[]{true, false};
+        result = LogUtility.toArray(object);
+        assertNotNull(result);
+        assertTrue(LogUtility.isArray(result));
+        assertEquals(Boolean.class, result[0].getClass());
+        assertEquals(2, result.length);
+
+        // short array
+        object = new short[]{1, 2};
+        result = LogUtility.toArray(object);
+        assertNotNull(result);
+        assertTrue(LogUtility.isArray(result));
+        assertEquals(Short.class, result[0].getClass());
+        assertEquals(2, result.length);
+
+        // short array
+        object = new float[]{1974.01f, 2.003f};
+        result = LogUtility.toArray(object);
+        assertNotNull(result);
+        assertTrue(LogUtility.isArray(result));
+        assertEquals(Float.class, result[0].getClass());
+        assertEquals(2, result.length);
     }
 }

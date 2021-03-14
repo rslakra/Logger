@@ -311,6 +311,127 @@ public final class LogUtility {
     }
 
     /**
+     * Returns true if the object is not null and is an array otherwise false.
+     *
+     * @param object
+     * @return
+     */
+    public static boolean isArray(final Object object) {
+        return (isNotNull(object) && object.getClass().isArray());
+    }
+
+    /**
+     * Returns true if the object instace of is not null and is an array otherwise false.
+     *
+     * @param object
+     * @return
+     */
+    public static boolean isPrimitiveArray(final Object object) {
+        return (isArray(object) && object.getClass().getComponentType().isPrimitive());
+    }
+
+    /**
+     * Returns true if the <code>object instance of byte[]</code> otherwise false.
+     *
+     * @param object
+     * @return
+     */
+    public static boolean isByteArray(final Object object) {
+        return (isNotNull(object) && object instanceof byte[]);
+    }
+
+    /**
+     * Returns true if the <code>object instance of boolean[]</code> otherwise false.
+     *
+     * @param object
+     * @return
+     */
+    public static boolean isBooleanArray(final Object object) {
+        return (isNotNull(object) && object instanceof boolean[]);
+    }
+
+    /**
+     * Returns true if the <code>object instance of short[]</code> otherwise false.
+     *
+     * @param object
+     * @return
+     */
+    public static boolean isShortArray(final Object object) {
+        return (isNotNull(object) && object instanceof short[]);
+    }
+
+    /**
+     * Returns true if the <code>object instance of char[]</code> otherwise false.
+     *
+     * @param object
+     * @return
+     */
+    public static boolean isCharArray(final Object object) {
+        return (isNotNull(object) && object instanceof char[]);
+    }
+
+
+    /**
+     * Returns true if the <code>object instance of int[]</code> otherwise false.
+     *
+     * @param object
+     * @return
+     */
+    public static boolean isIntArray(final Object object) {
+        return (isNotNull(object) && object instanceof int[]);
+    }
+
+    /**
+     * Returns true if the <code>object instance of float[]</code> otherwise false.
+     *
+     * @param object
+     * @return
+     */
+    public static boolean isFloatArray(final Object object) {
+        return (isNotNull(object) && object instanceof float[]);
+    }
+
+    /**
+     * Returns true if the <code>object instance of double[]</code> otherwise false.
+     *
+     * @param object
+     * @return
+     */
+    public static boolean isDoubleArray(final Object object) {
+        return (isNotNull(object) && object instanceof double[]);
+    }
+
+    /**
+     * Returns true if the <code>object instance of long[]</code> otherwise false.
+     *
+     * @param object
+     * @return
+     */
+    public static boolean isLongArray(final Object object) {
+        return (isNotNull(object) && object instanceof long[]);
+    }
+
+    /**
+     * @param object
+     * @return
+     */
+    public static Object[] toArray(final Object object) {
+        Object[] objects = null;
+        if (isPrimitiveArray(object)) {
+            // return Arrays.stream((char[]) object).boxed().toArray();
+            int arrLength = Array.getLength(object);
+            objects = new Object[arrLength];
+            for (int i = 0; i < arrLength; ++i) {
+                objects[i] = Array.get(object, i);
+            }
+        } else {
+            objects = (Object[]) object;
+        }
+
+        return objects;
+    }
+
+    /**
      * Returns true if the <code>object</code> is null or empty otherwise false.
      *
      * @param object
@@ -321,7 +442,7 @@ public final class LogUtility {
             return true;
         } else if (CharSequence.class.isAssignableFrom(object.getClass())) {
             return (((CharSequence) object).length() == 0 || ((CharSequence) object).toString().trim().length() == 0);
-        } else if (object.getClass().isArray()) {
+        } else if (isArray(object)) {
             return (Array.getLength(object) == 0);
         } else if (Collection.class.isAssignableFrom(object.getClass())) {
             return ((Collection<?>) object).isEmpty();
