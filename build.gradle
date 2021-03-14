@@ -133,6 +133,11 @@ application {
     mainClass = "${loggerMainClass}"
 }
 
+java {
+//    withJavadocJar()
+    withSourcesJar()
+}
+
 
 task createDocs {
     def docs = file("${buildDir}/docs")
@@ -159,16 +164,77 @@ distributions {
 }
 
 publishing {
+
     publications {
         maven(MavenPublication) {
+//            println(this.mavenPomDir())
             from(components.java)
         }
+
+//        mavenJava(MavenPublication) {
+////            artifactId = 'dLogger'
+//            from components.java
+//            versionMapping {
+//                usage('java-api') {
+//                    fromResolutionOf('runtimeClasspath')
+//                }
+//                usage('java-runtime') {
+//                    fromResolutionResult()
+//                }
+//            }
+//            pom {
+////                name = 'dLogger'
+////                description = 'A concise description of dLogger'
+////                url = 'http://www.devamatre.com/dLogger'
+////                properties = [
+////                        myProp: "value",
+////                        "prop.with.dots": "anotherValue"
+////                ]
+//                licenses {
+//                    license {
+//                        name = 'The Apache License, Version 2.0'
+//                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                    }
+//                }
+//                developers {
+//                    developer {
+//                        id = 'rslakra'
+//                        name = 'Rohtash Lakra'
+//                        email = 'rohtash.lakra@devamatre.com'
+//                    }
+//                }
+////                scm {
+////                    // https://github.com/rslakra/Logger.git
+////                    connection = 'scm:git:git://github.com/rslakra/Logger.git'
+////                    developerConnection = 'scm:git:ssh://github.com/rslakra/Logger.git'
+////                    url = 'http://github.com/rslakra/Logger.git'
+////                }
+//            }
+//        }
     }
 
     repositories {
         maven {
+            // change URLs to point to your repos, e.g. http://org/repo
 //            name = "${name}"
-            url = "file://${projectDir}/../${releasesDir}"
+            def releasesRepoUrl = "${buildDir}/repos/releases"
+            def snapshotsRepoUrl = "${buildDir}/repos/snapshots"
+//            url = "file://${projectDir}/../${releasesDir}"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            def releasesDirPath = new File(getProjectDir().getParent() + "/${releasesDir}")
+            println "releasesDirPath: ${releasesDirPath}"
         }
     }
+
 }
+
+//task copyRelease(type: Copy) {
+//    def releasesDirPath = new File(getProjectDir().getParent() + "/${releasesDir}")
+//    println "releasesDirPath: ${releasesDirPath}"
+//
+////    print(files(new File("${projectDir}/../${releasesDir}")))
+////    from files(new File("${projectDir}/../${releasesDir}"));
+////    into files(new File("${projectDir}/../${releasesDir}"));
+//}
+
+
