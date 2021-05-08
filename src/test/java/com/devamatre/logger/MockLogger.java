@@ -28,8 +28,7 @@
  *****************************************************************************/
 package com.devamatre.logger;
 
-import com.devamatre.logger.Logger;
-import com.devamatre.logger.LoggerImpl;
+import com.devamatre.logger.log4j.LoggerImpl;
 
 /**
  * The default logger manager for test cases.

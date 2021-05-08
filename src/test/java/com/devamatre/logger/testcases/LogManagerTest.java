@@ -29,6 +29,7 @@
 package com.devamatre.logger.testcases;
 
 import com.devamatre.logger.*;
+import com.devamatre.logger.log4j.LoggerImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

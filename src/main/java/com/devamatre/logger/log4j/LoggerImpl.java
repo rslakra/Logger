@@ -26,8 +26,12 @@
  * Devamatre reserves the right to modify the technical specifications and or 
  * features without any prior notice.
  *****************************************************************************/
-package com.devamatre.logger;
+package com.devamatre.logger.log4j;
 
+import com.devamatre.logger.LogFormatter;
+import com.devamatre.logger.LogTuple;
+import com.devamatre.logger.LogUtility;
+import com.devamatre.logger.Logger;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 
