@@ -28,6 +28,8 @@
  *****************************************************************************/
 package com.devamatre.logger;
 
+import com.devamatre.logger.log4j.Log4JLoggerImpl;
+
 /**
  * The default logger manager for test cases.
  *
@@ -42,13 +44,23 @@ public class MockLogger implements Logger {
     /**
      * logger
      */
-    private Logger logger;
+    private Logger logDelegator;
 
     /**
      * @param logClass
      */
     public MockLogger(Class<?> logClass) {
-        logger = new Log4JLoggerImpl(logClass);
+        logDelegator = new Log4JLoggerImpl(logClass);
+    }
+
+    /**
+     * Returns the supported <code>LogBinderType</code>.
+     *
+     * @return
+     */
+    @Override
+    public LogBinderType getBinderType() {
+        return LogBinderType.LOG4J;
     }
 
     /**
@@ -57,7 +69,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void fatal(Object object) {
-        logger.fatal(object);
+        logDelegator.fatal(object);
     }
 
     /**
@@ -68,7 +80,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void fatal(Object object, Throwable throwable) {
-        logger.fatal(object, throwable);
+        logDelegator.fatal(object, throwable);
     }
 
     /**
@@ -77,7 +89,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void fatal(String format, Object... arguments) {
-        logger.fatal(format, arguments);
+        logDelegator.fatal(format, arguments);
     }
 
     /**
@@ -87,7 +99,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void fatal(Throwable throwable, String format, Object... arguments) {
-        logger.fatal(throwable, format, arguments);
+        logDelegator.fatal(throwable, format, arguments);
     }
 
     /**
@@ -96,7 +108,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void error(Object object) {
-        logger.error(object);
+        logDelegator.error(object);
     }
 
     /**
@@ -107,7 +119,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void error(Object object, Throwable throwable) {
-        logger.error(object, throwable);
+        logDelegator.error(object, throwable);
     }
 
     /**
@@ -116,7 +128,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void error(String format, Object... arguments) {
-        logger.error(format, arguments);
+        logDelegator.error(format, arguments);
     }
 
     /**
@@ -126,7 +138,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void error(Throwable throwable, String format, Object... arguments) {
-        logger.error(throwable, format, arguments);
+        logDelegator.error(throwable, format, arguments);
     }
 
     /**
@@ -135,7 +147,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void warn(Object object) {
-        logger.warn(object);
+        logDelegator.warn(object);
     }
 
     /**
@@ -146,7 +158,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void warn(Object object, Throwable throwable) {
-        logger.warn(object, throwable);
+        logDelegator.warn(object, throwable);
     }
 
     /**
@@ -155,7 +167,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void warn(String format, Object... arguments) {
-        logger.warn(format, arguments);
+        logDelegator.warn(format, arguments);
     }
 
     /**
@@ -165,7 +177,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void warn(Throwable throwable, String format, Object... arguments) {
-        logger.warn(throwable, format, arguments);
+        logDelegator.warn(throwable, format, arguments);
     }
 
     /**
@@ -174,7 +186,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void info(Object object) {
-        logger.info(object);
+        logDelegator.info(object);
     }
 
     /**
@@ -185,7 +197,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void info(Object object, Throwable throwable) {
-        logger.info(object, throwable);
+        logDelegator.info(object, throwable);
     }
 
     /**
@@ -194,7 +206,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void info(String format, Object... arguments) {
-        logger.info(format, arguments);
+        logDelegator.info(format, arguments);
     }
 
     /**
@@ -204,7 +216,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void info(Throwable throwable, String format, Object... arguments) {
-        logger.info(throwable, format, arguments);
+        logDelegator.info(throwable, format, arguments);
     }
 
     /**
@@ -213,7 +225,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void debug(Object object) {
-        logger.debug(object);
+        logDelegator.debug(object);
     }
 
     /**
@@ -224,7 +236,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void debug(Object object, Throwable throwable) {
-        logger.debug(object, throwable);
+        logDelegator.debug(object, throwable);
     }
 
     /**
@@ -233,7 +245,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void debug(String format, Object... arguments) {
-        logger.debug(format, arguments);
+        logDelegator.debug(format, arguments);
     }
 
     /**
@@ -243,7 +255,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void debug(Throwable throwable, String format, Object... arguments) {
-        logger.debug(throwable, format, arguments);
+        logDelegator.debug(throwable, format, arguments);
     }
 
     /**
@@ -252,7 +264,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public boolean isDebugEnabled() {
-        return logger.isDebugEnabled();
+        return logDelegator.isDebugEnabled();
     }
 
     /**
@@ -261,7 +273,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public void setDebugEnabled(boolean debugEnabled) {
-        logger.setDebugEnabled(debugEnabled);
+        logDelegator.setDebugEnabled(debugEnabled);
     }
 
     /**
@@ -270,7 +282,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public boolean isInfoEnabled() {
-        return logger.isInfoEnabled();
+        return logDelegator.isInfoEnabled();
     }
 
     /**
@@ -279,7 +291,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public boolean isWarnEnabled() {
-        return logger.isWarnEnabled();
+        return logDelegator.isWarnEnabled();
     }
 
     /**
@@ -288,7 +300,7 @@ public class MockLogger implements Logger {
      */
     @Override
     public boolean isErrorEnabled() {
-        return logger.isErrorEnabled();
+        return logDelegator.isErrorEnabled();
     }
 
     /**
@@ -297,6 +309,6 @@ public class MockLogger implements Logger {
      */
     @Override
     public boolean isFatalEnabled() {
-        return logger.isFatalEnabled();
+        return logDelegator.isFatalEnabled();
     }
 }

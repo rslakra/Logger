@@ -26,8 +26,11 @@
  * Devamatre reserves the right to modify the technical specifications and or
  * features without any prior notice.
  *****************************************************************************/
-package com.devamatre.logger;
+package com.devamatre.logger.log4j;
 
+import com.devamatre.logger.AbstractLoggerImpl;
+import com.devamatre.logger.LogBinderType;
+import com.devamatre.logger.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -74,10 +77,13 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     }
 
     /**
+     * Returns the supported <code>LogBinderType</code>.
+     *
      * @return
      */
-    public org.apache.logging.log4j.Logger getLogDelegator() {
-        return logDelegator;
+    @Override
+    public LogBinderType getBinderType() {
+        return LogBinderType.LOG4J;
     }
 
     /**
@@ -89,7 +95,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     @Override
     public void fatal(final Object object) {
         if (isFatalEnabled()) {
-            getLogDelegator().error(getIndents(object));
+            logDelegator.error(getIndents(object));
         }
     }
 
@@ -110,7 +116,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     @Override
     public void fatal(final Object object, final Throwable throwable) {
         if (isFatalEnabled()) {
-            getLogDelegator().fatal(getIndents(object), throwable);
+            logDelegator.fatal(getIndents(object), throwable);
         }
     }
 
@@ -120,7 +126,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public void fatal(final String format, final Object... arguments) {
-        getLogDelegator().fatal(format, arguments);
+        logDelegator.fatal(format, arguments);
 //        LogTuple logTuple = LogFormatter.normalize(format, arguments);
 //        this.fatal(logTuple.toMessage(), logTuple.getThrowable());
     }
@@ -132,7 +138,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public void fatal(final Throwable throwable, final String format, final Object... arguments) {
-        getLogDelegator().fatal(format, arguments, throwable);
+        logDelegator.fatal(format, arguments, throwable);
 //        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
 //        this.fatal(logTuple.toMessage(), logTuple.getThrowable());
     }
@@ -146,7 +152,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     @Override
     public void error(final Object object) {
         if (isErrorEnabled()) {
-            getLogDelegator().error(getIndents(object));
+            logDelegator.error(getIndents(object));
         }
     }
 
@@ -167,7 +173,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     @Override
     public void error(final Object object, final Throwable throwable) {
         if (isErrorEnabled()) {
-            getLogDelegator().error(getIndents(object), throwable);
+            logDelegator.error(getIndents(object), throwable);
         }
     }
 
@@ -177,7 +183,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public void error(final String format, final Object... arguments) {
-        getLogDelegator().error(format, arguments);
+        logDelegator.error(format, arguments);
 //        LogTuple logTuple = LogFormatter.normalize(format, arguments);
 //        this.error(logTuple.toMessage(), logTuple.getThrowable());
     }
@@ -189,7 +195,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public void error(final Throwable throwable, final String format, final Object... arguments) {
-        getLogDelegator().error(format, arguments, throwable);
+        logDelegator.error(format, arguments, throwable);
 //        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
 //        this.error(logTuple.toMessage(), logTuple.getThrowable());
     }
@@ -203,7 +209,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     @Override
     public void warn(final Object object) {
         if (isWarnEnabled()) {
-            getLogDelegator().warn(getIndents(object));
+            logDelegator.warn(getIndents(object));
         }
     }
 
@@ -224,7 +230,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     @Override
     public void warn(final Object object, final Throwable throwable) {
         if (isWarnEnabled()) {
-            getLogDelegator().warn(getIndents(object), throwable);
+            logDelegator.warn(getIndents(object), throwable);
         }
     }
 
@@ -234,7 +240,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public void warn(final String format, final Object... arguments) {
-        getLogDelegator().warn(format, arguments);
+        logDelegator.warn(format, arguments);
 //        LogTuple logTuple = LogFormatter.normalize(format, arguments);
 //        this.warn(logTuple.toMessage(), logTuple.getThrowable());
     }
@@ -246,7 +252,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public void warn(final Throwable throwable, final String format, final Object... arguments) {
-        getLogDelegator().warn(format, arguments, throwable);
+        logDelegator.warn(format, arguments, throwable);
 //        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
 //        this.warn(logTuple.toMessage(), logTuple.getThrowable());
     }
@@ -260,7 +266,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     @Override
     public void info(final Object object) {
         if (isInfoEnabled()) {
-            getLogDelegator().info(getIndents(object));
+            logDelegator.info(getIndents(object));
         }
     }
 
@@ -281,7 +287,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     @Override
     public void info(final Object object, final Throwable throwable) {
         if (isInfoEnabled()) {
-            getLogDelegator().info(getIndents(object), throwable);
+            logDelegator.info(getIndents(object), throwable);
         }
     }
 
@@ -291,7 +297,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public void info(final String format, final Object... arguments) {
-        getLogDelegator().info(format, arguments);
+        logDelegator.info(format, arguments);
 //        LogTuple logTuple = LogFormatter.normalize(format, arguments);
 //        this.info(logTuple.toMessage(), logTuple.getThrowable());
     }
@@ -303,7 +309,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public void info(final Throwable throwable, final String format, final Object... arguments) {
-        getLogDelegator().info(format, arguments, throwable);
+        logDelegator.info(format, arguments, throwable);
 //        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
 //        this.info(logTuple.toMessage(), logTuple.getThrowable());
     }
@@ -317,7 +323,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     @Override
     public void debug(final Object object) {
         if (isDebugEnabled()) {
-            getLogDelegator().debug(getIndents(object));
+            logDelegator.debug(getIndents(object));
         }
     }
 
@@ -338,7 +344,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
     @Override
     public void debug(final Object object, final Throwable throwable) {
         if (isDebugEnabled()) {
-            getLogDelegator().debug(getIndents(object), throwable);
+            logDelegator.debug(getIndents(object), throwable);
         }
     }
 
@@ -348,7 +354,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public void debug(final String format, final Object... arguments) {
-        getLogDelegator().debug(format, arguments);
+        logDelegator.debug(format, arguments);
 //        LogTuple logTuple = LogFormatter.normalize(format, arguments);
 //        this.debug(logTuple.toMessage(), logTuple.getThrowable());
     }
@@ -360,7 +366,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public void debug(final Throwable throwable, final String format, final Object... arguments) {
-        getLogDelegator().debug(format, arguments, throwable);
+        logDelegator.debug(format, arguments, throwable);
 //        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
 //        this.debug(logTuple.toMessage(), logTuple.getThrowable());
     }
@@ -373,7 +379,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public boolean isDebugEnabled() {
-        return getLogDelegator().isDebugEnabled();
+        return logDelegator.isDebugEnabled();
     }
 
     /**
@@ -394,7 +400,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public boolean isInfoEnabled() {
-        return getLogDelegator().isInfoEnabled();
+        return logDelegator.isInfoEnabled();
     }
 
     /**
@@ -405,7 +411,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public boolean isWarnEnabled() {
-        return getLogDelegator().isWarnEnabled();
+        return logDelegator.isWarnEnabled();
     }
 
     /**
@@ -416,7 +422,7 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public boolean isErrorEnabled() {
-        return getLogDelegator().isErrorEnabled();
+        return logDelegator.isErrorEnabled();
     }
 
     /**
@@ -427,6 +433,6 @@ public final class Log4JLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public boolean isFatalEnabled() {
-        return getLogDelegator().isFatalEnabled();
+        return logDelegator.isFatalEnabled();
     }
 }

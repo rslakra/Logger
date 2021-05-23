@@ -54,6 +54,13 @@ package com.devamatre.logger;
 public interface Logger {
 
     /**
+     * Returns the supported <code>LogBinderType</code>.
+     *
+     * @return
+     */
+    LogBinderType getBinderType();
+
+    /**
      * FATAL - 5
      * <p>
      * Logs a message object with the {@link Logger#fatal(Object)} Level.

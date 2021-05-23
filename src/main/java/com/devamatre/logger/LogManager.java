@@ -28,8 +28,7 @@
  *****************************************************************************/
 package com.devamatre.logger;
 
-import org.apache.log4j.*;
-import org.apache.log4j.net.SyslogAppender;
+import org.apache.logging.log4j.Level;
 
 import java.io.File;
 import java.io.IOException;
