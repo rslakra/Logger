@@ -28,8 +28,6 @@
  *****************************************************************************/
 package com.devamatre.logger;
 
-import org.apache.log4j.helpers.OptionConverter;
-
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -67,7 +65,7 @@ public final class LogUtility {
      * <p>
      * Note that the search for all option names is case sensitive.
      */
-    public static final String DEBUG_KEY = "log4j.debug".intern();
+    public static final String KEY_LOG_LEVEL = "logLevel";
 
     /**
      * LINE_SEPARATOR
@@ -102,47 +100,47 @@ public final class LogUtility {
     /**
      * HTAB - Insert a tab in the text at this point.
      */
-    public static final String HTAB = "\t".intern();
+    public static final String HTAB = "\t";
 
     /**
      * BACKSPACE - Insert a backspace in the text at this point.
      */
-    public static final String BACKSPACE = "\b".intern();
+    public static final String BACKSPACE = "\b";
 
     /**
      * NEWLINE - Insert a newline in the text at this point.
      */
-    public static final String NEWLINE = "\n".intern();
+    public static final String NEWLINE = "\n";
 
     /**
      * CARRIAGE_RETURN - Insert a carriage return in the text at this point.
      */
-    public static final String CARRIAGE_RETURN = "\r".intern();
+    public static final String CARRIAGE_RETURN = "\r";
 
     /**
      * FORM_FEED - Insert a formfeed in the text at this point.
      */
-    public static final String FORM_FEED = "\f".intern();
+    public static final String FORM_FEED = "\f";
 
     /**
      * SINGLE_QUOTE - Insert a single quote character in the text at this point.
      */
-    public static final String SINGLE_QUOTE = "\'".intern();
+    public static final String SINGLE_QUOTE = "\'";
 
     /**
      * DOUBLE_QUOTE - Insert a double quote character in the text at this point.
      */
-    public static final String DOUBLE_QUOTE = "\"".intern();
+    public static final String DOUBLE_QUOTE = "\"";
 
     /**
      * BACKSLASH - Insert a backslash character in the text at this point.
      */
-    public static final String BACKSLASH = "\\".intern();
+    public static final String BACKSLASH = "\\";
 
     /**
      * SPACE
      */
-    public static final String SPACE = " ".intern();
+    public static final String SPACE = " ";
 
     /**
      * <code>DEBUG_ENABLED</code>
@@ -170,11 +168,13 @@ public final class LogUtility {
      */
     private static final String PREFIX = "LogUtility:";
 
+    // default logLevel setting.
+    private static LogLevel logLevel;
+
     static {
-        final String debugLog4jKey = OptionConverter.getSystemProperty(DEBUG_KEY, null);
-        if (!isNullOrEmpty(debugLog4jKey)) {
-            setDebugEnabled(OptionConverter.toBoolean(debugLog4jKey, true));
-        }
+        final String logLevelString = System.getProperty(KEY_LOG_LEVEL);
+        logLevel = (isNullOrEmpty(logLevelString) ? LogLevel.OFF : LogLevel.of(logLevelString));
+        setDebugEnabled((LogLevel.DEBUG == logLevel));
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -266,25 +266,45 @@ public final class LogUtility {
      * @param throwable
      * @return
      */
-    private static String toLogString(final String logPrefix, final String message, final Throwable throwable) {
-        final StringBuilder logStringBuilder = new StringBuilder();
+    private static String toString(final String logPrefix, final String message, final Throwable throwable) {
+        final StringBuilder logBuilder = new StringBuilder();
         if (isNotNullOrEmpty(logPrefix)) {
-            logStringBuilder.append(logPrefix);
+            logBuilder.append(logPrefix);
         }
 
         if (isNotNullOrEmpty(message)) {
-            logStringBuilder.append(message);
+            logBuilder.append(message);
         }
 
         if (isNotNull(throwable)) {
-            logStringBuilder.append(NEWLINE);
-            logStringBuilder.append(throwable.getLocalizedMessage());
-            logStringBuilder.append(NEWLINE);
-            logStringBuilder.append(toString(throwable));
+            logBuilder.append(NEWLINE);
+            logBuilder.append(throwable.getLocalizedMessage());
+            logBuilder.append(NEWLINE);
+            logBuilder.append(toString(throwable));
         }
 
-        return logStringBuilder.toString();
+        return logBuilder.toString();
     }
+
+    /**
+     * @param logLevel
+     * @param message
+     * @param throwable
+     * @return
+     */
+    private static String toString(final LogLevel logLevel, final String message, final Throwable throwable) {
+        return toString(logLevel.logPrefixString(PREFIX), message, throwable);
+    }
+
+    /**
+     * @param logLevel
+     * @param logTuple
+     * @return
+     */
+    private static String toString(final LogLevel logLevel, final LogTuple logTuple) {
+        return toString(logLevel.logPrefixString(PREFIX), logTuple.getMessage(), logTuple.getThrowable());
+    }
+
 
     // /////////////////////////////////////////////////////////////////////////
     // ///////////////////////// PUBLIC METHODS ////////////////////////////////
@@ -432,22 +452,36 @@ public final class LogUtility {
     }
 
     /**
+     * Returns the length of the specified array.
+     *
+     * @param object
+     * @return
+     */
+    public static int getLength(final Object object) {
+        return (isNull(object) ? 0 : Array.getLength(object));
+    }
+
+    /**
      * Returns true if the <code>object</code> is null or empty otherwise false.
      *
      * @param object
      * @return
      */
     public static boolean isNullOrEmpty(final Object object) {
-        if (isNull(object)) {
+        if (Objects.isNull(object)) {
             return true;
-        } else if (CharSequence.class.isAssignableFrom(object.getClass())) {
-            return (((CharSequence) object).length() == 0 || ((CharSequence) object).toString().trim().length() == 0);
-        } else if (isArray(object)) {
-            return (Array.getLength(object) == 0);
-        } else if (Collection.class.isAssignableFrom(object.getClass())) {
-            return ((Collection<?>) object).isEmpty();
-        } else if (Map.class.isAssignableFrom(object.getClass())) {
-            return ((Map<?, ?>) object).isEmpty();
+        } else if (object instanceof String && ((String) object).trim().length() == 0) {
+            return true;
+        } else if (object instanceof CharSequence && ((CharSequence) object).length() == 0) {
+            return true;
+        } else if (object.getClass().isArray() && getLength(object) == 0) {
+            return true;
+        } else if (object instanceof Collection && ((Collection<?>) object).size() == 0) {
+            return true;
+        } else if (object instanceof Enumeration && !((Enumeration<?>) object).hasMoreElements()) {
+            return true;
+        } else if (object instanceof Map && ((Map<?, ?>) object).size() == 0) {
+            return true;
         }
 
         return false;
@@ -492,88 +526,103 @@ public final class LogUtility {
     }
 
     /**
-     * Logs the internal debug logs of this logger to <code>System.out</code>.
+     * Logs the internal error logs of this logger to <code>System.err</code>.
+     * Even if you have disabled all the logs, the error logs are always logged.
      *
-     * @param message
+     * @param format
+     * @param arguments
      */
-    public static void debug(final String message) {
-        debug(message, null);
+    public static void error(final String format, final Object... arguments) {
+        System.err.println(toString(LogLevel.ERROR, LogFormatter.normalize(format, arguments)));
+    }
+
+    /**
+     * Logs the internal error logs of this logger to <code>System.err</code>.
+     * Even if you have disabled all the logs, the error logs are always logged.
+     *
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    public static void error(final Throwable throwable, final String format, final Object... arguments) {
+        System.err.println(toString(LogLevel.ERROR, LogFormatter.normalize(format, arguments, throwable)));
+    }
+
+    /**
+     * Logs the internal warn logs of this logger to <code>System.out</code>.
+     *
+     * @param format
+     * @param arguments
+     */
+    public static void warn(final String format, final Object... arguments) {
+        if (!isDisableAll()) {
+            System.out.println(toString(LogLevel.WARN, LogFormatter.normalize(format, arguments)));
+        }
+    }
+
+    /**
+     * Logs the internal warn logs of this logger to <code>System.out</code>.
+     *
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    public static void warn(final Throwable throwable, final String format, final Object... arguments) {
+        if (!isDisableAll()) {
+            System.out.println(toString(LogLevel.WARN, LogFormatter.normalize(format, arguments, throwable)));
+        }
+    }
+
+    /**
+     * Logs the internal info logs of this logger to <code>System.out</code>.
+     *
+     * @param format
+     * @param arguments
+     */
+    public static void info(final String format, final Object... arguments) {
+//        if (!isDisableAll()) {
+        System.out.println(toString(LogLevel.INFO, LogFormatter.normalize(format, arguments)));
+//        }
+    }
+
+    /**
+     * Logs the internal info logs of this logger to <code>System.out</code>.
+     *
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    public static void info(final Throwable throwable, final String format, final Object... arguments) {
+//        if (!isDisableAll()) {
+        System.out.println(toString(LogLevel.INFO, LogFormatter.normalize(format, arguments, throwable)));
+//        }
     }
 
     /**
      * Logs the internal debug logs of this logger to <code>System.out</code>.
      *
-     * @param message
-     * @param throwable
+     * @param format
+     * @param arguments
      */
-    public static void debug(final String message, final Throwable throwable) {
+    public static void debug(final String format, final Object... arguments) {
         if (isDebugEnabled() && !isDisableAll()) {
-            System.out.println(toLogString(LogLevel.DEBUG.logPrefixString(PREFIX), message, throwable));
+            System.out.println(toString(LogLevel.INFO, LogFormatter.normalize(format, arguments)));
         }
     }
 
     /**
-     * Logs the internal info logs of this logger to <code>System.out</code>.
+     * Logs the internal debug logs of this logger to <code>System.out</code>.
      *
-     * @param message
-     */
-    public static void info(final String message) {
-        info(message, null);
-    }
-
-    /**
-     * Logs the internal info logs of this logger to <code>System.out</code>.
-     *
-     * @param message
      * @param throwable
+     * @param format
+     * @param arguments
      */
-    public static void info(final String message, final Throwable throwable) {
-        if (!isDisableAll()) {
-            System.out.println(toLogString(LogLevel.INFO.logPrefixString(PREFIX), message, throwable));
+    public static void debug(final Throwable throwable, final String format, final Object... arguments) {
+        if (isDebugEnabled() && !isDisableAll()) {
+            System.out.println(toString(LogLevel.INFO, LogFormatter.normalize(format, arguments, throwable)));
         }
     }
 
-    /**
-     * Logs the internal warn logs of this logger to <code>System.out</code>.
-     *
-     * @param message
-     */
-    public static void warn(final String message) {
-        warn(message, null);
-    }
-
-    /**
-     * Logs the internal warn logs of this logger to <code>System.out</code>.
-     *
-     * @param message
-     * @param throwable
-     */
-    public static void warn(final String message, final Throwable throwable) {
-        if (!isDisableAll()) {
-            System.out.println(toLogString(LogLevel.WARN.logPrefixString(PREFIX), message, throwable));
-        }
-    }
-
-    /**
-     * Logs the internal error logs of this logger to <code>System.err</code>.
-     * Even if you have disabled all the logs, the error logs are always logged.
-     *
-     * @param message
-     */
-    public static void error(final String message) {
-        error(message, null);
-    }
-
-    /**
-     * Logs the internal error logs of this logger to <code>System.err</code>.
-     * Even if you have disabled all the logs, the error logs are always logged.
-     *
-     * @param message
-     * @param throwable
-     */
-    public static void error(final String message, final Throwable throwable) {
-        System.err.println(toLogString(LogLevel.ERROR.logPrefixString(PREFIX), message, throwable));
-    }
 
     /**
      * Prints the <code>properties</code> all key/value.
@@ -738,21 +787,21 @@ public final class LogUtility {
     /**
      * Closes the specified <code>closeables</code> objects.
      *
-     * @param closeables
+     * @param closables
      */
-    public static void closeSilently(final Object... closeables) {
-        if (isNotNull(closeables)) {
-            for (Object closeable : closeables) {
+    public static void closeSilently(final Object... closables) {
+        if (isNotNull(closables)) {
+            for (Object closable : closables) {
                 try {
-                    if (closeable instanceof Closeable) {
-                        ((Closeable) closeable).close();
-                    } else if (closeable instanceof Socket) {
-                        ((Socket) closeable).close();
-                    } else if (closeable instanceof ServerSocket) {
-                        ((ServerSocket) closeable).close();
+                    if (closable instanceof Closeable) {
+                        ((Closeable) closable).close();
+                    } else if (closable instanceof Socket) {
+                        ((Socket) closable).close();
+                    } else if (closable instanceof ServerSocket) {
+                        ((ServerSocket) closable).close();
                     }
                 } catch (Throwable ex) {
-                    error("Error on close! closeable:" + closeable, ex);
+                    error("Error on close! closable:" + closable, ex);
                 }
             }
         }
@@ -827,7 +876,7 @@ public final class LogUtility {
      * @param objects
      * @return
      */
-    public static Object[] arrayCopyWithoutThrowable(final Object[] objects) {
+    public static Object[] arrayCopyExcludingThrowable(final Object[] objects) {
         if (isNullOrEmpty(objects)) {
             throw new IllegalStateException("Either empty or null array!");
         }

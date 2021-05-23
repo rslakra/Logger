@@ -28,8 +28,7 @@
  *****************************************************************************/
 package com.devamatre.logger;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>LoggerImpl</code> class is the implementation of the Logger
@@ -59,109 +58,35 @@ import org.apache.log4j.Level;
  * @created 2009-08-09 2:51:50 PM
  * @since 1.0.0
  */
-public final class LoggerImpl implements Logger {
+public final class Slf4JLoggerImpl extends AbstractLoggerImpl implements Logger {
 
     /* The Root logger. */
-    private Category rootLogger;
-
-    /* The Root logger. */
-    private boolean supportIndentation;
-
-    /* Maintains indentation of the log messages. */
-    private final StringBuilder indentBuilder = new StringBuilder();
-
-    /* debugEnabled - user internally. */
-    private boolean debugEnabled;
-
-    /*
-     * This code is added to optimize the indentation for performance.
-     */
-    private int lastDepth = 0;
-    private String indentString;
+    private org.slf4j.Logger logDelegator;
 
     /**
-     * Parameterized Constructor.
-     *
      * @param logClass
      */
-    public LoggerImpl(Class<?> logClass) {
-        this.rootLogger = org.apache.log4j.LogManager.getLogger(logClass);
-        supportIndentation = false;
-        debugEnabled = true;
+    public Slf4JLoggerImpl(Class<?> logClass) {
+        super();
+        this.logDelegator = LoggerFactory.getLogger(logClass);
+    }
+
+    protected org.slf4j.Logger getLogDelegator() {
+        return logDelegator;
     }
 
     /**
-     * This method returns the string after indentation up to the passed depth.
-     *
-     * @param depth
-     * @return string after indentation.
-     */
-    private String indent(int depth) {
-        LogUtility.debug("+indent(" + depth + ")");
-        if (lastDepth != depth) {
-            this.lastDepth = depth;
-
-            /* prepare indented string by emptying it. */
-            indentBuilder.delete(0, indentBuilder.length());
-            for (int i = 0; i < depth; i++) {
-                indentBuilder.append(LogUtility.HTAB);
-            }
-
-            // avoid multiple object creation.
-            indentString = indentBuilder.toString();
-        }
-
-        LogUtility.debug("-indent(), indentString:" + indentString);
-        return indentString;
-    }
-
-    /**
-     * Returns the object to be logged with required indents.
+     * Logs a message object with the {@link Logger#fatal(Object)} Level.
      *
      * @param object
-     * @return object to be logged.
-     */
-    private Object getIndents(final Object object) {
-        return getIndents(object, supportIndentation);
-    }
-
-    /**
-     * Returns the object to be logged with required indents.
-     *
-     * @param object
-     * @param indentation
-     * @return
-     */
-    private Object getIndents(Object object, final boolean indentation) {
-        LogUtility.debug("+getIndents(" + object + ", " + indentation + ")");
-
-        /* check indentation supported or not. */
-        if (indentation) {
-            /* get current stack trace and adjust for this method. */
-            int depth = (new Throwable().getStackTrace().length - 4);
-            object = indent(depth) + object;
-        }
-
-        LogUtility.debug("-getIndents(), object: " + object);
-        return object;
-    }
-
-    /**
-     * Logs a message object with the {@link Level#FATAL FATAL} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
-     * @param object
-     * @see com.devamatre.logger.Logger#fatal(java.lang.Object)
+     * @see Logger#fatal(Object)
      */
     @Override
     public void fatal(final Object object) {
-        if (isFatalEnabled()) {
-            rootLogger.fatal(getIndents(object));
-        }
+        error(object);
+//        if (isFatalEnabled()) {
+//            getLogDelegator().error(getIndents(object).toString());
+//        }
     }
 
     /**
@@ -175,14 +100,15 @@ public final class LoggerImpl implements Logger {
      *
      * @param object
      * @param throwable
-     * @see com.devamatre.logger.Logger#fatal(java.lang.Object,
-     * java.lang.Throwable)
+     * @see Logger#fatal(Object,
+     * Throwable)
      */
     @Override
     public void fatal(final Object object, final Throwable throwable) {
-        if (isFatalEnabled()) {
-            rootLogger.fatal(getIndents(object), throwable);
-        }
+        error(object, throwable);
+//        if (isFatalEnabled()) {
+//            getLogDelegator().error(getIndents(object).toString(), throwable);
+//        }
     }
 
     /**
@@ -191,8 +117,10 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void fatal(final String format, final Object... arguments) {
-        LogTuple logTuple = LogFormatter.normalize(format, arguments);
-        this.fatal(logTuple.toMessage(), logTuple.getThrowable());
+        error(format, arguments);
+//        getLogDelegator().error(format, arguments);
+//        LogTuple logTuple = LogFormatter.normalize(format, arguments);
+//        this.fatal(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -202,25 +130,25 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void fatal(final Throwable throwable, final String format, final Object... arguments) {
-        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
-        this.fatal(logTuple.toMessage(), logTuple.getThrowable());
+        error(throwable, format, arguments);
+//        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
+//        this.fatal(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
-     * Logs a message object with the {@link Level#ERROR ERROR} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     * Logs a message object with the {@link Logger#error(Object)} Level.
      *
      * <p>
      * See <code>org.apache.log4j.Category</code> for more detailed information.
      * </p>
      *
      * @param object
-     * @see com.devamatre.logger.Logger#error(java.lang.Object)
+     * @see Logger#error(Object)
      */
     @Override
     public void error(final Object object) {
         if (isErrorEnabled()) {
-            rootLogger.error(getIndents(object));
+            getLogDelegator().error(getIndents(object).toString());
         }
     }
 
@@ -235,13 +163,13 @@ public final class LoggerImpl implements Logger {
      *
      * @param object
      * @param throwable
-     * @see com.devamatre.logger.Logger#error(java.lang.Object,
-     * java.lang.Throwable)
+     * @see Logger#error(Object,
+     * Throwable)
      */
     @Override
     public void error(final Object object, final Throwable throwable) {
         if (isErrorEnabled()) {
-            rootLogger.error(getIndents(object), throwable);
+            getLogDelegator().error(getIndents(object).toString(), throwable);
         }
     }
 
@@ -267,20 +195,15 @@ public final class LoggerImpl implements Logger {
     }
 
     /**
-     * Logs a message object with the {@link Level#WARN WARN} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
+     * Logs a message object with the {@link Logger#warn(Object)} Level.
      *
      * @param object
-     * @see com.devamatre.logger.Logger#warn(java.lang.Object)
+     * @see Logger#warn(Object)
      */
     @Override
     public void warn(final Object object) {
         if (isWarnEnabled()) {
-            rootLogger.warn(getIndents(object));
+            getLogDelegator().warn(getIndents(object).toString());
         }
     }
 
@@ -295,13 +218,13 @@ public final class LoggerImpl implements Logger {
      *
      * @param object
      * @param throwable
-     * @see com.devamatre.logger.Logger#warn(java.lang.Object,
-     * java.lang.Throwable)
+     * @see Logger#warn(Object,
+     * Throwable)
      */
     @Override
     public void warn(final Object object, final Throwable throwable) {
         if (isWarnEnabled()) {
-            rootLogger.warn(getIndents(object), throwable);
+            getLogDelegator().warn(getIndents(object).toString(), throwable);
         }
     }
 
@@ -311,8 +234,9 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void warn(final String format, final Object... arguments) {
-        LogTuple logTuple = LogFormatter.normalize(format, arguments);
-        this.warn(logTuple.toMessage(), logTuple.getThrowable());
+        getLogDelegator().warn(format, arguments);
+//        LogTuple logTuple = LogFormatter.normalize(format, arguments);
+//        this.warn(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -322,25 +246,21 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void warn(final Throwable throwable, final String format, final Object... arguments) {
-        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
-        this.warn(logTuple.toMessage(), logTuple.getThrowable());
+        getLogDelegator().warn(format, arguments, throwable);
+//        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
+//        this.warn(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
-     * Logs a message object with the {@link Level#INFO INFO} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
+     * Logs a message object with the {@link Logger#info(Object)} Level.
      *
      * @param object
-     * @see com.devamatre.logger.Logger#info(java.lang.Object)
+     * @see Logger#info(Object)
      */
     @Override
     public void info(final Object object) {
         if (isInfoEnabled()) {
-            rootLogger.info(getIndents(object));
+            getLogDelegator().info(getIndents(object).toString());
         }
     }
 
@@ -355,13 +275,13 @@ public final class LoggerImpl implements Logger {
      *
      * @param object
      * @param throwable
-     * @see com.devamatre.logger.Logger#info(java.lang.Object,
-     * java.lang.Throwable)
+     * @see Logger#info(Object,
+     * Throwable)
      */
     @Override
     public void info(final Object object, final Throwable throwable) {
         if (isInfoEnabled()) {
-            rootLogger.info(getIndents(object), throwable);
+            getLogDelegator().info(getIndents(object).toString(), throwable);
         }
     }
 
@@ -371,8 +291,9 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void info(final String format, final Object... arguments) {
-        LogTuple logTuple = LogFormatter.normalize(format, arguments);
-        this.info(logTuple.toMessage(), logTuple.getThrowable());
+        getLogDelegator().info(format, arguments);
+//        LogTuple logTuple = LogFormatter.normalize(format, arguments);
+//        this.info(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -382,25 +303,21 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void info(final Throwable throwable, final String format, final Object... arguments) {
-        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
-        this.info(logTuple.toMessage(), logTuple.getThrowable());
+        getLogDelegator().info(format, arguments, throwable);
+//        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
+//        this.info(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
-     * Logs a message object with the {@link Level#DEBUG DEBUG} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
+     * Logs a message object with the {@link Logger#debug(Object)} Level.
      *
      * @param object
-     * @see com.devamatre.logger.Logger#debug(java.lang.Object)
+     * @see Logger#debug(Object)
      */
     @Override
     public void debug(final Object object) {
         if (isDebugEnabled()) {
-            rootLogger.debug(getIndents(object));
+            getLogDelegator().debug(getIndents(object).toString());
         }
     }
 
@@ -415,13 +332,13 @@ public final class LoggerImpl implements Logger {
      *
      * @param object
      * @param throwable
-     * @see com.devamatre.logger.Logger#debug(java.lang.Object,
-     * java.lang.Throwable)
+     * @see Logger#debug(Object,
+     * Throwable)
      */
     @Override
     public void debug(final Object object, final Throwable throwable) {
         if (isDebugEnabled()) {
-            rootLogger.debug(getIndents(object), throwable);
+            getLogDelegator().debug(getIndents(object).toString(), throwable);
         }
     }
 
@@ -431,8 +348,9 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void debug(final String format, final Object... arguments) {
-        LogTuple logTuple = LogFormatter.normalize(format, arguments);
-        this.debug(logTuple.toMessage(), logTuple.getThrowable());
+        getLogDelegator().debug(format, arguments);
+//        LogTuple logTuple = LogFormatter.normalize(format, arguments);
+//        this.debug(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
@@ -442,73 +360,72 @@ public final class LoggerImpl implements Logger {
      */
     @Override
     public void debug(final Throwable throwable, final String format, final Object... arguments) {
-        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
-        this.debug(logTuple.toMessage(), logTuple.getThrowable());
+        getLogDelegator().debug(format, arguments, throwable);
+//        LogTuple logTuple = LogFormatter.normalize(format, arguments, throwable);
+//        this.debug(logTuple.toMessage(), logTuple.getThrowable());
     }
 
     /**
      * Checks whether this category is enabled for the <code>DEBUG</code> Level.
      *
      * @return
-     * @see com.devamatre.logger.Logger#isDebugEnabled()
+     * @see Logger#isDebugEnabled()
      */
     @Override
     public boolean isDebugEnabled() {
-        return rootLogger.isEnabledFor(Level.DEBUG) && debugEnabled;
+        return getLogDelegator().isDebugEnabled();
     }
 
     /**
      * The debugEnabled to be set.
      *
      * @param debugEnabled
-     * @see com.devamatre.logger.Logger#setDebugEnabled(boolean)
      */
     @Override
     public void setDebugEnabled(boolean debugEnabled) {
-        this.debugEnabled = debugEnabled;
     }
 
     /**
      * Checks whether this category is enabled for the <code>INFO</code> Level.
      *
      * @return
-     * @see com.devamatre.logger.Logger#isInfoEnabled()
+     * @see Logger#isInfoEnabled()
      */
     @Override
     public boolean isInfoEnabled() {
-        return rootLogger.isEnabledFor(Level.WARN);
+        return getLogDelegator().isInfoEnabled();
     }
 
     /**
      * Checks whether this category is enabled for the <code>WARN</code> Level.
      *
      * @return
-     * @see com.devamatre.logger.Logger#isWarnEnabled()
+     * @see Logger#isWarnEnabled()
      */
     @Override
     public boolean isWarnEnabled() {
-        return rootLogger.isEnabledFor(Level.WARN);
+        return getLogDelegator().isWarnEnabled();
     }
 
     /**
      * Checks whether this category is enabled for the <code>ERROR</code> Level.
      *
      * @return
-     * @see com.devamatre.logger.Logger#isErrorEnabled()
+     * @see Logger#isErrorEnabled()
      */
     @Override
     public boolean isErrorEnabled() {
-        return rootLogger.isEnabledFor(Level.ERROR);
+        return getLogDelegator().isErrorEnabled();
     }
 
     /**
      * Checks whether this category is enabled for the <code>FATAL</code> Level.
      *
      * @return
-     * @see com.devamatre.logger.Logger#isFatalEnabled()
+     * @see Logger#isFatalEnabled()
      */
     @Override
     public boolean isFatalEnabled() {
-        return rootLogger.isEnabledFor(Level.FATAL);
+        return isErrorEnabled();
     }
 }

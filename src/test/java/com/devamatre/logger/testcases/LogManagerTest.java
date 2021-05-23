@@ -52,7 +52,7 @@ public class LogManagerTest {
     public void testGetLogger() {
         final Logger logger = LogManager.getLogger(LogManagerTest.class);
         assertNotNull(logger);
-        assertEquals(LoggerImpl.class, logger.getClass());
+        assertEquals(Log4JLoggerImpl.class, logger.getClass());
     }
 
     @Test

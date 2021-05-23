@@ -39,12 +39,13 @@ package com.devamatre.logger;
  * @created 2009-08-09 1:51:50 PM
  * @since 1.0.0
  */
-public final class NullLogger implements Logger {
+public final class NullLogger extends AbstractLoggerImpl implements Logger {
 
     /**
      * Default Constructor.
      */
     public NullLogger() {
+        super();
     }
 
     /**
@@ -53,6 +54,7 @@ public final class NullLogger implements Logger {
      * @return
      * @see com.devamatre.logger.Logger#isDebugEnabled()
      */
+    @Override
     public boolean isDebugEnabled() {
         return false;
     }
@@ -134,17 +136,6 @@ public final class NullLogger implements Logger {
     public void fatal(String format, Object... arguments) {
 
     }
-
-    /**
-     * @param throwable
-     * @param format
-     * @param arguments
-     */
-    @Override
-    public void fatal(Throwable throwable, String format, Object... arguments) {
-
-    }
-
 
     /**
      * @param object

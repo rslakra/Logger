@@ -28,9 +28,6 @@
  *****************************************************************************/
 package com.devamatre.logger;
 
-import com.devamatre.logger.Logger;
-import com.devamatre.logger.LoggerImpl;
-
 /**
  * The default logger manager for test cases.
  *
@@ -51,7 +48,7 @@ public class MockLogger implements Logger {
      * @param logClass
      */
     public MockLogger(Class<?> logClass) {
-        logger = new LoggerImpl(logClass);
+        logger = new Log4JLoggerImpl(logClass);
     }
 
     /**

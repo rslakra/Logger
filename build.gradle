@@ -21,6 +21,7 @@ ext {
     orgName = 'Devamatre'
     releasesDir = 'Releases'
     log4jVersion = '2.14.0'
+    slf4jVersion = '1.7.25'
     jUnitVersion = '4.13.1'
     jUnitJupiterVersion = '5.6.0'
     loggerMainClass = 'com.devamatre.logger.testcases.TestLogger'
@@ -41,6 +42,8 @@ dependencies {
 //    implementation "log4j:log4j:${log4jVersion}"
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
     implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitJupiterVersion}"
     // The runtime is junit-jupiter-engine for JUnit 5
@@ -52,7 +55,6 @@ dependencies {
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${jUnitJupiterVersion}"
     // Enabling Support for Old Versions
     testCompileOnly "junit:junit:${jUnitVersion}"
-
 }
 
 test {

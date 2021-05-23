@@ -102,7 +102,7 @@ public final class LogManager {
                 if (LogUtility.isNull(logClass)) {
                     logger = new NullLogger();
                 } else {
-                    logger = new LoggerImpl(logClass);
+                    logger = new Log4JLoggerImpl(logClass);
                 }
 
                 /* cache this class logger to reuse */
