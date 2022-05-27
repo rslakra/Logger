@@ -20,11 +20,11 @@ sourceCompatibility = '1.8'
 ext {
     orgName = 'Devamatre'
     releasesDir = 'Releases'
-    log4jVersion = '2.17.1'
+    log4jVersion = '2.17.2'
     slf4jVersion = '1.7.32'
     jUnitVersion = '4.13.1'
     jUnitJupiterVersion = '5.6.0'
-    loggerMainClass = 'com.devamatre.logger.testcases.TestLogger'
+    mainClassLoggerName = 'com.devamatre.logger.testcases.LoggerTest'
 }
 
 //archiveBaseName-archiveAppendix-archiveVersion-archiveClassifier.archiveExtension
@@ -134,7 +134,7 @@ uploadArchives {
 //}
 
 application {
-    mainClass = "${loggerMainClass}"
+    setMainClassName(mainClassLoggerName);
 }
 
 

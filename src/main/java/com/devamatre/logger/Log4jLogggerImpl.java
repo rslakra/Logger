@@ -29,97 +29,42 @@
 package com.devamatre.logger;
 
 /**
- * The <code>LogLevel</code> enum contains the details of the logging levels.
+ * The <code>LoggerImpl</code> class is the implementation of the Logger
+ * interface. It has the definition of all logger methods like warn, debug etc.
+ * <code>
+ * [Indentation Example - Instance 0]
+ * 2009/09/09 22:06:28.109: Section start
+ * :   Subsection A
+ * ....
+ * :        Subsection A.1
+ * ....
+ * :            Subsection A.1.1
+ * ....
+ * :            End Subsection A.1.1
+ * ....
+ * :        End of Subsection A.1
+ * ....
+ * :   End of Subsection A
+ * </code>
+ * <p>
+ * This indentation will help to know in understanding of the logs.
+ * </p>
  *
  * @author Rohtash Lakra (rohtash.lakra@devamatre.com)
  * @author Rohtash Singh Lakra (rohtash.singh@gmail.com)
  * @version 1.0.0
- * @created 2009-08-09 2:53:50 PM
+ * @created 2009-08-09 2:51:50 PM
  * @since 1.0.0
  */
-public enum LogLevel {
+public final class Log4jLogggerImpl extends AbstractLoggerImpl implements Logger {
 
     /**
-     * Logging Level - ALL = 0
-     */
-    ALL,
-    /**
-     * Logging Level - DEBUG = 1
-     */
-    DEBUG,
-    /**
-     * Logging Level - INFO = 2
-     */
-    INFO,
-    /**
-     * Logging Level - WARN = 3
-     */
-    WARN,
-    /**
-     * Logging Level - ERROR = 4
-     */
-    ERROR,
-    /**
-     * Logging Level - FATAL = 5
-     */
-    FATAL,
-    /**
-     * Logging Level - OFF = 6
-     */
-    OFF;
-
-    /**
-     * The unreachable constructor to block creating the objects outside.
-     */
-    private LogLevel() {
-    }
-
-    /**
-     * Returns the string representation of this debug level (See documentation
-     * for log levels).
+     * Parameterized Constructor.
      *
-     * @see java.lang.Enum#toString()
+     * @param logClass
      */
-    public String toString() {
-        return name().toUpperCase();
+    public Log4jLogggerImpl(Class<?> logClass) {
+        super(false, true, LogManager.getRootLogger(logClass));
     }
 
-    /**
-     * Returns the log level position in its enum declaration (By default the
-     * initial constant is assigned an ordinal of zero).
-     *
-     * @return ordinal
-     */
-    public int getLogLevel() {
-        return this.ordinal();
-    }
-
-    /**
-     * Returns true if the log level is > OFF otherwise false.
-     *
-     * @return
-     */
-    public boolean isLogEnabled() {
-        return (getLogLevel() > LogLevel.OFF.getLogLevel());
-    }
-
-    /***
-     * Returns the log string prefixed with the specified <code>prefix</code>.
-     *
-     * @param prefix
-     * @return
-     */
-    public String logPrefixString(final String prefix) {
-        return (prefix + toString() + ":");
-    }
-
-    /**
-     * Returns the <code>LogLevel</code> value of the <code>logLevel</code> string.
-     *
-     * @param logLevel
-     * @return
-     */
-    public static LogLevel of(String logLevel) {
-        return LogLevel.valueOf(logLevel.toUpperCase());
-    }
 }

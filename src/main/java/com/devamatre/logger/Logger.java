@@ -51,7 +51,7 @@ package com.devamatre.logger;
  * @created 2009-08-09 2:51:50 PM
  * @since 1.0.0
  */
-public interface Logger {
+public interface Logger extends org.apache.logging.log4j.Logger {
 
     /**
      * Returns the supported <code>LogBinderType</code>.
@@ -63,7 +63,8 @@ public interface Logger {
     /**
      * FATAL - 5
      * <p>
-     * Logs a message object with the {@link Logger#fatal(Object)} Level.
+     * Logs a message object with the {@link LogBinderType FATAL} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
      * See <code>org.apache.log4j.Category</code> for more detailed information.
@@ -102,7 +103,12 @@ public interface Logger {
     /**
      * ERROR - 4
      * <p>
-     * Logs a message object with the {@link Logger#error(Object)}Level.
+     * Logs a message object with the {@link LogBinderType ERROR} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
      *
      * @param object
      */
@@ -137,7 +143,12 @@ public interface Logger {
     /**
      * WARN - 3
      * <p>
-     * Logs a message object with the {@link Logger#warn(Object)} Level.
+     * Logs a message object with the {@link LogBinderType WARN} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
      *
      * @param object
      */
@@ -172,7 +183,8 @@ public interface Logger {
     /**
      * INFO - 2
      * <p>
-     * Logs a message object with the {@link Logger#info(Object)} Level.
+     * Logs a message object with the {@link LogBinderType INFO} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
      * See <code>org.apache.log4j.Category</code> for more detailed information.
@@ -211,7 +223,9 @@ public interface Logger {
     /**
      * DEBUG - 1
      * <p>
-     * Logs a message object with the {@link Logger#debug(Object)} Level.
+     * Logs a message object with the {@link LogBinderType DEBUG} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
      * <p>
      * See <code>org.apache.log4j.Category</code> for more detailed information.
      * </p>
@@ -287,5 +301,4 @@ public interface Logger {
      * @return
      */
     boolean isFatalEnabled();
-
 }

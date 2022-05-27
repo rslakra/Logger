@@ -308,7 +308,7 @@ public final class LogFormatter {
             throwable = LogUtility.getThrowableIfContains(arguments);
             if (LogUtility.isNotNull(throwable)) {
                 // TODO: Check if truncate the message also or not.
-                arguments = LogUtility.arrayCopyExcludingThrowable(arguments);
+//                arguments = LogUtility.arrayCopyWithoutThrowable(arguments);
                 return new LogTuple(messagePattern, arguments, throwable);
             } else {
                 return new LogTuple(messagePattern, arguments);

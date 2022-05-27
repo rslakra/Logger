@@ -65,37 +65,37 @@ public final class LogUtility {
      * <p>
      * Note that the search for all option names is case sensitive.
      */
-    public static final String KEY_LOG_LEVEL = "logLevel";
+    public static final String DEBUG_KEY = "log4j.debug";
 
     /**
      * LINE_SEPARATOR
      */
-    public static final String LINE_SEPARATOR = System.getProperty("line.separator").intern();
+    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     /**
      * USER_HOME
      */
-    public static final String USER_HOME = System.getProperty("user.home").intern();
+    public static final String USER_HOME = System.getProperty("user.home");
 
     /**
      * USER_DIR
      */
-    public static final String USER_DIR = System.getProperty("user.dir").intern();
+    public static final String USER_DIR = System.getProperty("user.dir");
 
     /**
      * OS_NAME
      */
-    public static final String OS_NAME = System.getProperty("os.name").intern();
+    public static final String OS_NAME = System.getProperty("os.name");
 
     /**
      * OS_VERSION
      */
-    public static final String OS_VERSION = System.getProperty("os.version").intern();
+    public static final String OS_VERSION = System.getProperty("os.version");
 
     /**
      * FILE_SEPARATOR
      */
-    public static final String FILE_SEPARATOR = System.getProperty("file.separator").intern();
+    public static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
     /**
      * HTAB - Insert a tab in the text at this point.
@@ -168,18 +168,30 @@ public final class LogUtility {
      */
     private static final String PREFIX = "LogUtility:";
 
-    // default logLevel setting.
-    private static LogLevel logLevel;
-
     static {
-        final String logLevelString = System.getProperty(KEY_LOG_LEVEL);
-        logLevel = (isNullOrEmpty(logLevelString) ? LogLevel.OFF : LogLevel.of(logLevelString));
-        setDebugEnabled((LogLevel.DEBUG == logLevel));
+        final String debugLog4jKey = System.getProperty(DEBUG_KEY);
+        if (!isNullOrEmpty(debugLog4jKey)) {
+            setDebugEnabled(toBoolean(debugLog4jKey, true));
+        }
     }
 
     // /////////////////////////////////////////////////////////////////////////
     // ////////////////////// GETTER/SETTER METHODS ////////////////////////////
     // /////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @param value
+     * @param defaultValue
+     * @return
+     */
+    public static boolean toBoolean(final String value, final boolean defaultValue) {
+        try {
+            return Boolean.parseBoolean(value);
+        } catch (Exception ex) {
+            LogUtility.error(ex.getLocalizedMessage(), ex);
+            return defaultValue;
+        }
+    }
 
     /**
      * Returns the <code>DEBUG_ENABLED</code> value.
@@ -266,45 +278,25 @@ public final class LogUtility {
      * @param throwable
      * @return
      */
-    private static String toString(final String logPrefix, final String message, final Throwable throwable) {
-        final StringBuilder logBuilder = new StringBuilder();
+    private static String toLogString(final String logPrefix, final String message, final Throwable throwable) {
+        final StringBuilder logStringBuilder = new StringBuilder();
         if (isNotNullOrEmpty(logPrefix)) {
-            logBuilder.append(logPrefix);
+            logStringBuilder.append(logPrefix);
         }
 
         if (isNotNullOrEmpty(message)) {
-            logBuilder.append(message);
+            logStringBuilder.append(message);
         }
 
         if (isNotNull(throwable)) {
-            logBuilder.append(NEWLINE);
-            logBuilder.append(throwable.getLocalizedMessage());
-            logBuilder.append(NEWLINE);
-            logBuilder.append(toString(throwable));
+            logStringBuilder.append(NEWLINE);
+            logStringBuilder.append(throwable.getLocalizedMessage());
+            logStringBuilder.append(NEWLINE);
+            logStringBuilder.append(toString(throwable));
         }
 
-        return logBuilder.toString();
+        return logStringBuilder.toString();
     }
-
-    /**
-     * @param logLevel
-     * @param message
-     * @param throwable
-     * @return
-     */
-    private static String toString(final LogLevel logLevel, final String message, final Throwable throwable) {
-        return toString(logLevel.logPrefixString(PREFIX), message, throwable);
-    }
-
-    /**
-     * @param logLevel
-     * @param logTuple
-     * @return
-     */
-    private static String toString(final LogLevel logLevel, final LogTuple logTuple) {
-        return toString(logLevel.logPrefixString(PREFIX), logTuple.getMessage(), logTuple.getThrowable());
-    }
-
 
     // /////////////////////////////////////////////////////////////////////////
     // ///////////////////////// PUBLIC METHODS ////////////////////////////////
@@ -452,36 +444,22 @@ public final class LogUtility {
     }
 
     /**
-     * Returns the length of the specified array.
-     *
-     * @param object
-     * @return
-     */
-    public static int getLength(final Object object) {
-        return (isNull(object) ? 0 : Array.getLength(object));
-    }
-
-    /**
      * Returns true if the <code>object</code> is null or empty otherwise false.
      *
      * @param object
      * @return
      */
     public static boolean isNullOrEmpty(final Object object) {
-        if (Objects.isNull(object)) {
+        if (isNull(object)) {
             return true;
-        } else if (object instanceof String && ((String) object).trim().length() == 0) {
-            return true;
-        } else if (object instanceof CharSequence && ((CharSequence) object).length() == 0) {
-            return true;
-        } else if (object.getClass().isArray() && getLength(object) == 0) {
-            return true;
-        } else if (object instanceof Collection && ((Collection<?>) object).size() == 0) {
-            return true;
-        } else if (object instanceof Enumeration && !((Enumeration<?>) object).hasMoreElements()) {
-            return true;
-        } else if (object instanceof Map && ((Map<?, ?>) object).size() == 0) {
-            return true;
+        } else if (CharSequence.class.isAssignableFrom(object.getClass())) {
+            return (((CharSequence) object).length() == 0 || ((CharSequence) object).toString().trim().length() == 0);
+        } else if (isArray(object)) {
+            return (Array.getLength(object) == 0);
+        } else if (Collection.class.isAssignableFrom(object.getClass())) {
+            return ((Collection<?>) object).isEmpty();
+        } else if (Map.class.isAssignableFrom(object.getClass())) {
+            return ((Map<?, ?>) object).isEmpty();
         }
 
         return false;
@@ -526,103 +504,88 @@ public final class LogUtility {
     }
 
     /**
-     * Logs the internal error logs of this logger to <code>System.err</code>.
-     * Even if you have disabled all the logs, the error logs are always logged.
+     * Logs the internal debug logs of this logger to <code>System.out</code>.
      *
-     * @param format
-     * @param arguments
+     * @param message
      */
-    public static void error(final String format, final Object... arguments) {
-        System.err.println(toString(LogLevel.ERROR, LogFormatter.normalize(format, arguments)));
+    public static void debug(final String message) {
+        debug(message, null);
     }
 
     /**
-     * Logs the internal error logs of this logger to <code>System.err</code>.
-     * Even if you have disabled all the logs, the error logs are always logged.
+     * Logs the internal debug logs of this logger to <code>System.out</code>.
      *
+     * @param message
      * @param throwable
-     * @param format
-     * @param arguments
      */
-    public static void error(final Throwable throwable, final String format, final Object... arguments) {
-        System.err.println(toString(LogLevel.ERROR, LogFormatter.normalize(format, arguments, throwable)));
-    }
-
-    /**
-     * Logs the internal warn logs of this logger to <code>System.out</code>.
-     *
-     * @param format
-     * @param arguments
-     */
-    public static void warn(final String format, final Object... arguments) {
-        if (!isDisableAll()) {
-            System.out.println(toString(LogLevel.WARN, LogFormatter.normalize(format, arguments)));
-        }
-    }
-
-    /**
-     * Logs the internal warn logs of this logger to <code>System.out</code>.
-     *
-     * @param throwable
-     * @param format
-     * @param arguments
-     */
-    public static void warn(final Throwable throwable, final String format, final Object... arguments) {
-        if (!isDisableAll()) {
-            System.out.println(toString(LogLevel.WARN, LogFormatter.normalize(format, arguments, throwable)));
+    public static void debug(final String message, final Throwable throwable) {
+        if (isDebugEnabled() && !isDisableAll()) {
+            System.out.println(toLogString(LogLevel.DEBUG.logPrefixString(PREFIX), message, throwable));
         }
     }
 
     /**
      * Logs the internal info logs of this logger to <code>System.out</code>.
      *
-     * @param format
-     * @param arguments
+     * @param message
      */
-    public static void info(final String format, final Object... arguments) {
-//        if (!isDisableAll()) {
-        System.out.println(toString(LogLevel.INFO, LogFormatter.normalize(format, arguments)));
-//        }
+    public static void info(final String message) {
+        info(message, null);
     }
 
     /**
      * Logs the internal info logs of this logger to <code>System.out</code>.
      *
+     * @param message
      * @param throwable
-     * @param format
-     * @param arguments
      */
-    public static void info(final Throwable throwable, final String format, final Object... arguments) {
-//        if (!isDisableAll()) {
-        System.out.println(toString(LogLevel.INFO, LogFormatter.normalize(format, arguments, throwable)));
-//        }
-    }
-
-    /**
-     * Logs the internal debug logs of this logger to <code>System.out</code>.
-     *
-     * @param format
-     * @param arguments
-     */
-    public static void debug(final String format, final Object... arguments) {
-        if (isDebugEnabled() && !isDisableAll()) {
-            System.out.println(toString(LogLevel.INFO, LogFormatter.normalize(format, arguments)));
+    public static void info(final String message, final Throwable throwable) {
+        if (!isDisableAll()) {
+            System.out.println(toLogString(LogLevel.INFO.logPrefixString(PREFIX), message, throwable));
         }
     }
 
     /**
-     * Logs the internal debug logs of this logger to <code>System.out</code>.
+     * Logs the internal warn logs of this logger to <code>System.out</code>.
      *
-     * @param throwable
-     * @param format
-     * @param arguments
+     * @param message
      */
-    public static void debug(final Throwable throwable, final String format, final Object... arguments) {
-        if (isDebugEnabled() && !isDisableAll()) {
-            System.out.println(toString(LogLevel.INFO, LogFormatter.normalize(format, arguments, throwable)));
+    public static void warn(final String message) {
+        warn(message, null);
+    }
+
+    /**
+     * Logs the internal warn logs of this logger to <code>System.out</code>.
+     *
+     * @param message
+     * @param throwable
+     */
+    public static void warn(final String message, final Throwable throwable) {
+        if (!isDisableAll()) {
+            System.out.println(toLogString(LogLevel.WARN.logPrefixString(PREFIX), message, throwable));
         }
     }
 
+    /**
+     * Logs the internal error logs of this logger to <code>System.err</code>.
+     * Even if you have disabled all the logs, the error logs are always logged.
+     *
+     * @param message
+     */
+    public static void error(final String message) {
+        error(message, null);
+    }
+
+    /**
+     * Logs the internal error logs of this logger to <code>System.err</code>.
+     * Even if you have disabled all the logs, the error logs are always logged.
+     *
+     * @param message
+     * @param throwable
+     */
+    public static void error(final String message, final Throwable throwable) {
+        System.err.println(toLogString(LogLevel.ERROR.logPrefixString(PREFIX), message, throwable));
+    }
 
     /**
      * Prints the <code>properties</code> all key/value.
@@ -787,21 +750,21 @@ public final class LogUtility {
     /**
      * Closes the specified <code>closeables</code> objects.
      *
-     * @param closables
+     * @param closeables
      */
-    public static void closeSilently(final Object... closables) {
-        if (isNotNull(closables)) {
-            for (Object closable : closables) {
+    public static void closeSilently(final Object... closeables) {
+        if (isNotNull(closeables)) {
+            for (Object closeable : closeables) {
                 try {
-                    if (closable instanceof Closeable) {
-                        ((Closeable) closable).close();
-                    } else if (closable instanceof Socket) {
-                        ((Socket) closable).close();
-                    } else if (closable instanceof ServerSocket) {
-                        ((ServerSocket) closable).close();
+                    if (closeable instanceof Closeable) {
+                        ((Closeable) closeable).close();
+                    } else if (closeable instanceof Socket) {
+                        ((Socket) closeable).close();
+                    } else if (closeable instanceof ServerSocket) {
+                        ((ServerSocket) closeable).close();
                     }
                 } catch (Throwable ex) {
-                    error("Error on close! closable:" + closable, ex);
+                    error("Error on close! closeable:" + closeable, ex);
                 }
             }
         }
@@ -876,7 +839,7 @@ public final class LogUtility {
      * @param objects
      * @return
      */
-    public static Object[] arrayCopyExcludingThrowable(final Object[] objects) {
+    public static Object[] arrayCopyWithoutThrowable(final Object[] objects) {
         if (isNullOrEmpty(objects)) {
             throw new IllegalStateException("Either empty or null array!");
         }
