@@ -45,7 +45,7 @@ public final class NullLogger extends AbstractLoggerImpl implements Logger {
      * Default Constructor.
      */
     public NullLogger() {
-        super(false, true, LogManager.getRootLogger());
+        super(false, true);
     }
 
     /**

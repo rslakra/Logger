@@ -39,11 +39,208 @@ package com.devamatre.logger;
  */
 public class MockLogger extends AbstractLoggerImpl implements Logger {
 
+    private Logger LOGGER;
+
     /**
      * @param logClass
      */
     public MockLogger(Class<?> logClass) {
-        super(false, true, new Log4jLogggerImpl(logClass));
+        super(false, true);
+        LOGGER = new Log4jLoggerImpl(logClass);
     }
 
+    @Override
+    public boolean isDebugEnabled() {
+        return LOGGER.isDebugEnabled();
+    }
+
+    @Override
+    public boolean isInfoEnabled() {
+        return LOGGER.isInfoEnabled();
+    }
+
+    @Override
+    public boolean isWarnEnabled() {
+        return LOGGER.isWarnEnabled();
+    }
+
+    @Override
+    public boolean isErrorEnabled() {
+        return LOGGER.isErrorEnabled();
+    }
+
+    @Override
+    public boolean isFatalEnabled() {
+        return LOGGER.isFatalEnabled();
+    }
+
+    /**
+     * FATAL - 5
+     * <p>
+     * Logs a message object with the {@link LogBinderType FATAL} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     */
+    @Override
+    public void fatal(Object object) {
+
+    }
+
+    /**
+     * Log a message object with the <code>FATAL</code> level including the
+     * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
+     * It delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @param throwable
+     */
+    @Override
+    public void fatal(Object object, Throwable throwable) {
+
+    }
+
+    /**
+     * ERROR - 4
+     * <p>
+     * Logs a message object with the {@link LogBinderType ERROR} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     */
+    @Override
+    public void error(Object object) {
+
+    }
+
+    /**
+     * Log a message object with the <code>ERROR</code> level including the
+     * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
+     * It delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @param throwable
+     */
+    @Override
+    public void error(Object object, Throwable throwable) {
+
+    }
+
+    /**
+     * WARN - 3
+     * <p>
+     * Logs a message object with the {@link LogBinderType WARN} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     */
+    @Override
+    public void warn(Object object) {
+
+    }
+
+    /**
+     * Log a message object with the <code>WARN</code> level including the stack
+     * trace of the {@link Throwable} <code>t</code> passed as parameter. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @param throwable
+     */
+    @Override
+    public void warn(Object object, Throwable throwable) {
+
+    }
+
+    /**
+     * INFO - 2
+     * <p>
+     * Logs a message object with the {@link LogBinderType INFO} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     */
+    @Override
+    public void info(Object object) {
+
+    }
+
+    /**
+     * Log a message object with the <code>INFO</code> level including the stack
+     * trace of the {@link Throwable} <code>t</code> passed as parameter. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @param throwable
+     */
+    @Override
+    public void info(Object object, Throwable throwable) {
+
+    }
+
+    /**
+     * DEBUG - 1
+     * <p>
+     * Logs a message object with the {@link LogBinderType DEBUG} Level. It
+     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     */
+    @Override
+    public void debug(Object object) {
+
+    }
+
+    /**
+     * Log a message object with the <code>DEBUG</code> level including the
+     * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
+     * It delegates the calls to <code>org.apache.log4j.Category</code>.
+     *
+     * <p>
+     * See <code>org.apache.log4j.Category</code> for more detailed information.
+     * </p>
+     *
+     * @param object
+     * @param throwable
+     */
+    @Override
+    public void debug(Object object, Throwable throwable) {
+
+    }
 }

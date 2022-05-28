@@ -28,6 +28,8 @@
  *****************************************************************************/
 package com.devamatre.logger;
 
+import org.apache.logging.log4j.Level;
+
 /**
  * The <code>LoggerImpl</code> class is the implementation of the Logger
  * interface. It has the definition of all logger methods like warn, debug etc.
@@ -56,19 +58,19 @@ package com.devamatre.logger;
  * @created 2009-08-09 2:51:50 PM
  * @since 1.0.0
  */
-public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger {
-
+public final class Log4jLoggerImpl extends AbstractLoggerImpl implements Logger {
 
     /* The Root logger. */
-    private org.slf4j.Logger rootLogger;
+    private org.apache.logging.log4j.Logger rootLogger;
 
     /**
      * Parameterized Constructor.
      *
      * @param logClass
      */
-    public Slf4jLoggerImpl(Class<?> logClass) {
+    public Log4jLoggerImpl(final Class<?> logClass) {
         super(false, true);
+        rootLogger = LogManager.getRootLogger(logClass);
     }
 
     /**
@@ -79,8 +81,7 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public boolean isDebugEnabled() {
-//        return rootLogger.isEnabled(Level.DEBUG) && isDebugEnabled();
-        return false;
+        return rootLogger.isEnabled(Level.DEBUG) && isDebugEnabled();
     }
 
     /**
@@ -91,8 +92,7 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public boolean isInfoEnabled() {
-//        return rootLogger.isEnabled(Level.WARN);
-        return false;
+        return rootLogger.isEnabled(Level.WARN);
     }
 
     /**
@@ -103,8 +103,7 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public boolean isWarnEnabled() {
-//        return rootLogger.isEnabled(Level.WARN);
-        return false;
+        return rootLogger.isEnabled(Level.WARN);
     }
 
     /**
@@ -115,8 +114,7 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public boolean isErrorEnabled() {
-//        return rootLogger.isEnabled(Level.ERROR);
-        return false;
+        return rootLogger.isEnabled(Level.ERROR);
     }
 
     /**
@@ -127,14 +125,12 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      */
     @Override
     public boolean isFatalEnabled() {
-//        return rootLogger.isEnabled(Level.FATAL);
-        return false;
+        return rootLogger.isEnabled(Level.FATAL);
     }
 
+
     /**
-     * FATAL - 5
-     * <p>
-     * Logs a message object with the {@link LogBinderType FATAL} Level. It
+     * Logs a message object with the {@link Level#FATAL FATAL} Level. It
      * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
@@ -142,10 +138,13 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      * </p>
      *
      * @param object
+     * @see com.devamatre.logger.Logger#fatal(java.lang.Object)
      */
     @Override
-    public void fatal(Object object) {
-
+    public void fatal(final Object object) {
+        if (isFatalEnabled()) {
+            rootLogger.fatal(getIndents(object));
+        }
     }
 
     /**
@@ -159,16 +158,19 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      *
      * @param object
      * @param throwable
+     * @see com.devamatre.logger.Logger#fatal(java.lang.Object,
+     * java.lang.Throwable)
      */
     @Override
-    public void fatal(Object object, Throwable throwable) {
-
+    public void fatal(final Object object, final Throwable throwable) {
+        if (isFatalEnabled()) {
+            rootLogger.fatal(getIndents(object), throwable);
+        }
     }
 
+
     /**
-     * ERROR - 4
-     * <p>
-     * Logs a message object with the {@link LogBinderType ERROR} Level. It
+     * Logs a message object with the {@link Level#ERROR ERROR} Level. It
      * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
@@ -176,10 +178,13 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      * </p>
      *
      * @param object
+     * @see com.devamatre.logger.Logger#error(java.lang.Object)
      */
     @Override
-    public void error(Object object) {
-
+    public void error(final Object object) {
+        if (isErrorEnabled()) {
+            rootLogger.error(getIndents(object));
+        }
     }
 
     /**
@@ -193,16 +198,19 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      *
      * @param object
      * @param throwable
+     * @see com.devamatre.logger.Logger#error(java.lang.Object,
+     * java.lang.Throwable)
      */
     @Override
-    public void error(Object object, Throwable throwable) {
-
+    public void error(final Object object, final Throwable throwable) {
+        if (isErrorEnabled()) {
+            rootLogger.error(getIndents(object), throwable);
+        }
     }
 
+
     /**
-     * WARN - 3
-     * <p>
-     * Logs a message object with the {@link LogBinderType WARN} Level. It
+     * Logs a message object with the {@link Level#WARN WARN} Level. It
      * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
@@ -210,10 +218,13 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      * </p>
      *
      * @param object
+     * @see com.devamatre.logger.Logger#warn(java.lang.Object)
      */
     @Override
-    public void warn(Object object) {
-
+    public void warn(final Object object) {
+        if (isWarnEnabled()) {
+            rootLogger.warn(getIndents(object));
+        }
     }
 
     /**
@@ -227,16 +238,19 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      *
      * @param object
      * @param throwable
+     * @see com.devamatre.logger.Logger#warn(java.lang.Object,
+     * java.lang.Throwable)
      */
     @Override
-    public void warn(Object object, Throwable throwable) {
-
+    public void warn(final Object object, final Throwable throwable) {
+        if (isWarnEnabled()) {
+            rootLogger.warn(getIndents(object), throwable);
+        }
     }
 
+
     /**
-     * INFO - 2
-     * <p>
-     * Logs a message object with the {@link LogBinderType INFO} Level. It
+     * Logs a message object with the {@link Level#INFO INFO} Level. It
      * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
@@ -244,10 +258,13 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      * </p>
      *
      * @param object
+     * @see com.devamatre.logger.Logger#info(java.lang.Object)
      */
     @Override
-    public void info(Object object) {
-
+    public void info(final Object object) {
+        if (isInfoEnabled()) {
+            rootLogger.info(getIndents(object));
+        }
     }
 
     /**
@@ -261,16 +278,19 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      *
      * @param object
      * @param throwable
+     * @see com.devamatre.logger.Logger#info(java.lang.Object,
+     * java.lang.Throwable)
      */
     @Override
-    public void info(Object object, Throwable throwable) {
-
+    public void info(final Object object, final Throwable throwable) {
+        if (isInfoEnabled()) {
+            rootLogger.info(getIndents(object), throwable);
+        }
     }
 
+
     /**
-     * DEBUG - 1
-     * <p>
-     * Logs a message object with the {@link LogBinderType DEBUG} Level. It
+     * Logs a message object with the {@link Level#DEBUG DEBUG} Level. It
      * delegates the calls to <code>org.apache.log4j.Category</code>.
      *
      * <p>
@@ -278,10 +298,13 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      * </p>
      *
      * @param object
+     * @see com.devamatre.logger.Logger#debug(java.lang.Object)
      */
     @Override
-    public void debug(Object object) {
-
+    public void debug(final Object object) {
+        if (isDebugEnabled()) {
+            rootLogger.debug(getIndents(object));
+        }
     }
 
     /**
@@ -295,9 +318,13 @@ public final class Slf4jLoggerImpl extends AbstractLoggerImpl implements Logger 
      *
      * @param object
      * @param throwable
+     * @see com.devamatre.logger.Logger#debug(java.lang.Object,
+     * java.lang.Throwable)
      */
     @Override
-    public void debug(Object object, Throwable throwable) {
-
+    public void debug(final Object object, final Throwable throwable) {
+        if (isDebugEnabled()) {
+            rootLogger.debug(getIndents(object), throwable);
+        }
     }
 }

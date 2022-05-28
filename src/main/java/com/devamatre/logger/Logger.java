@@ -51,7 +51,7 @@ package com.devamatre.logger;
  * @created 2009-08-09 2:51:50 PM
  * @since 1.0.0
  */
-public interface Logger extends org.apache.logging.log4j.Logger {
+public interface Logger {
 
     /**
      * Returns the supported <code>LogBinderType</code>.
