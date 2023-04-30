@@ -28,7 +28,11 @@
  *****************************************************************************/
 package com.devamatre.logger;
 
+import com.devamatre.logger.log4j.Log4JLoggerImpl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.appender.SyslogAppender;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,26 +98,23 @@ public final class LogManager {
      */
     public static Logger getLogger(Class<?> logClass, boolean debugEnabled) {
         Logger logger = null;
-        if (LogUtility.isNull(logger)) {
-            synchronized (LogManager.class) {
-                String className = (LogUtility.isNull(logClass) ? NullLogger.class.getName() : logClass.getName());
-                logger = loggers.get(className);
-                if (LogUtility.isNull(logger)) {
-                    if (LogUtility.isNull(logClass)) {
-                        logger = new NullLogger();
-                    } else {
-                        logger = new Log4jLoggerImpl(logClass);
-                    }
-
-                    /* cache this class logger to reuse */
-                    logger.setDebugEnabled(debugEnabled);
-
-                    /* cache this class logger to reuse */
-                    loggers.put(className, logger);
+        synchronized (LogManager.class) {
+            final String className = (LogUtility.isNull(logClass) ? NullLogger.class.getName() : logClass.getName());
+            logger = loggers.get(className);
+            if (LogUtility.isNull(logger)) {
+                if (LogUtility.isNull(logClass)) {
+                    logger = new NullLogger();
+                } else {
+                    logger = new Log4JLoggerImpl(logClass);
                 }
+
+                /* cache this class logger to reuse */
+                logger.setDebugEnabled(debugEnabled);
+
+                /* cache this class logger to reuse */
+                loggers.put(className, logger);
             }
         }
-
 
         return logger;
     }
@@ -121,11 +122,11 @@ public final class LogManager {
     /**
      * This method returns the Logger for the specified class.
      *
-     * @param klass
+     * @param classType
      * @return
      */
-    public static Logger getLogger(Class<?> klass) {
-        return getLogger(klass, true);
+    public static Logger getLogger(Class<?> classType) {
+        return getLogger(classType, true);
     }
 
     /**
@@ -189,22 +190,6 @@ public final class LogManager {
     }
 
     /**
-     * @return
-     */
-    public static org.apache.logging.log4j.Logger getRootLogger() {
-        return org.apache.logging.log4j.LogManager.getRootLogger();
-    }
-
-    /**
-     * @param logClassType
-     * @param <T>
-     * @return
-     */
-    public static <T> org.apache.logging.log4j.Logger getRootLogger(Class<T> logClassType) {
-        return org.apache.logging.log4j.LogManager.getLogger(logClassType);
-    }
-
-    /**
      * Starting Point of logger to initialize the logger with the specified
      * values.
      *
@@ -225,8 +210,11 @@ public final class LogManager {
                 + pattern + ", log4jFile:" + log4jFile + ", serverEnabled:" + serverEnabled + ", remoteHost:"
                 + remoteHost);
         if (forceLogToConsole) {
-            org.apache.logging.log4j.Logger rootLogger = getRootLogger();
-//            rootLogger.setLevel(getLevel(level));
+//            org.apache.logging.log4j.Logger rootLogger = org.apache.logging.log4j.LogManager.getRootLogger();
+//            rootLogger.atLevel(getLevel(level));
+
+//            Category root = org.apache.log4j.LogManager.getRootLogger();
+//            root.setLevel(getLevel(level));
             if (LogUtility.isNullOrEmpty(pattern)) {
                 pattern = DEFAULT_PATTERN;
             }
@@ -257,7 +245,8 @@ public final class LogManager {
                     // SyslogAppender
                     LogUtility.debug("Creating Remote SyslogAppender...");
 
-//                    root.addAppender(new SyslogAppender.Builder<>(PatternLayout.newSerializerBuilder().setPattern(pattern).build(), remoteHost, null /*SyslogAppender.LOG_USER*/).build());
+//                    root.addAppender(SyslogAppender.newSyslogAppenderBuilder());
+//                    new SyslogAppender(PatternLayout.newBuilder().withPattern(pattern), remoteHost, SyslogAppender.LOG_USER)
                 } catch (UnknownHostException ex) {
                     LogUtility.debug("Remote Syslog not reachable.  Creating Local FileAppender...", ex);
                     // root.addAppender(new FileAppender(new
@@ -269,14 +258,13 @@ public final class LogManager {
                 }
             } else { // local logging; standard
                 try {
-//                    root.addAppender(new ConsoleAppender.Builder<>(new PatternLayout.SerializerBuilder().setPattern(pattern)).build());
+//                    root.addAppender(new ConsoleAppender(PatternLayout.newBuilder().withPattern(pattern)));
                 } catch (Exception ex) {
                     LogUtility.error(ex.getLocalizedMessage(), ex);
                 }
             }
         } else {
             /* loads the provided log4j file. */
-//            https://logging.apache.org/log4j/2.x/manual/migration.html
 //            PropertyConfigurator.configure(log4jFile);
         }
     }

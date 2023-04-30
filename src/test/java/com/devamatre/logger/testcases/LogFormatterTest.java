@@ -57,7 +57,8 @@ public class LogFormatterTest {
         LogUtility.print(logTuple.toMessage());
 
         logTuple = LogFormatter.normalize("First Name: {}, Last Name: {}, Exception: {}", new Object[]{"Rohtash Singh", "Lakra", new RuntimeException("Objects")});
-        LogUtility.print(logTuple.toMessage());
+        LogUtility.debug("logTuple: {}", logTuple);
+//        LogUtility.print(logTuple.toMessage());
 
     }
 

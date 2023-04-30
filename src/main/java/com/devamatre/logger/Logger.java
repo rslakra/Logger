@@ -63,8 +63,7 @@ public interface Logger {
     /**
      * FATAL - 5
      * <p>
-     * Logs a message object with the {@link LogBinderType FATAL} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     * Logs a message object with the {@link Logger#fatal(Object)} Level.
      *
      * <p>
      * See <code>org.apache.log4j.Category</code> for more detailed information.
@@ -103,12 +102,7 @@ public interface Logger {
     /**
      * ERROR - 4
      * <p>
-     * Logs a message object with the {@link LogBinderType ERROR} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
+     * Logs a message object with the {@link Logger#error(Object)}Level.
      *
      * @param object
      */
@@ -143,12 +137,7 @@ public interface Logger {
     /**
      * WARN - 3
      * <p>
-     * Logs a message object with the {@link LogBinderType WARN} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
+     * Logs a message object with the {@link Logger#warn(Object)} Level.
      *
      * @param object
      */
@@ -183,8 +172,7 @@ public interface Logger {
     /**
      * INFO - 2
      * <p>
-     * Logs a message object with the {@link LogBinderType INFO} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     * Logs a message object with the {@link Logger#info(Object)} Level.
      *
      * <p>
      * See <code>org.apache.log4j.Category</code> for more detailed information.
@@ -223,9 +211,7 @@ public interface Logger {
     /**
      * DEBUG - 1
      * <p>
-     * Logs a message object with the {@link LogBinderType DEBUG} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
+     * Logs a message object with the {@link Logger#debug(Object)} Level.
      * <p>
      * See <code>org.apache.log4j.Category</code> for more detailed information.
      * </p>
@@ -301,4 +287,5 @@ public interface Logger {
      * @return
      */
     boolean isFatalEnabled();
+
 }

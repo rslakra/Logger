@@ -28,6 +28,8 @@
  *****************************************************************************/
 package com.devamatre.logger;
 
+import com.devamatre.logger.log4j.Log4JLoggerImpl;
+
 /**
  * The default logger manager for test cases.
  *
@@ -37,210 +39,276 @@ package com.devamatre.logger;
  * @created 2010-08-09 2:51:50 PM
  * @since 1.0.0
  */
-public class MockLogger extends AbstractLoggerImpl implements Logger {
+public class MockLogger implements Logger {
 
-    private Logger LOGGER;
+    /**
+     * logger
+     */
+    private Logger logDelegator;
 
     /**
      * @param logClass
      */
     public MockLogger(Class<?> logClass) {
-        super(false, true);
-        LOGGER = new Log4jLoggerImpl(logClass);
-    }
-
-    @Override
-    public boolean isDebugEnabled() {
-        return LOGGER.isDebugEnabled();
-    }
-
-    @Override
-    public boolean isInfoEnabled() {
-        return LOGGER.isInfoEnabled();
-    }
-
-    @Override
-    public boolean isWarnEnabled() {
-        return LOGGER.isWarnEnabled();
-    }
-
-    @Override
-    public boolean isErrorEnabled() {
-        return LOGGER.isErrorEnabled();
-    }
-
-    @Override
-    public boolean isFatalEnabled() {
-        return LOGGER.isFatalEnabled();
+        logDelegator = new Log4JLoggerImpl(logClass);
     }
 
     /**
-     * FATAL - 5
-     * <p>
-     * Logs a message object with the {@link LogBinderType FATAL} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
+     * Returns the supported <code>LogBinderType</code>.
      *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
+     * @return
+     */
+    @Override
+    public LogBinderType getBinderType() {
+        return LogBinderType.LOG4J;
+    }
+
+    /**
      * @param object
+     * @see com.devamatre.logger.Logger#fatal(java.lang.Object)
      */
     @Override
     public void fatal(Object object) {
-
+        logDelegator.fatal(object);
     }
 
     /**
-     * Log a message object with the <code>FATAL</code> level including the
-     * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
-     * It delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
      * @param object
      * @param throwable
+     * @see com.devamatre.logger.Logger#fatal(java.lang.Object,
+     * java.lang.Throwable)
      */
     @Override
     public void fatal(Object object, Throwable throwable) {
-
+        logDelegator.fatal(object, throwable);
     }
 
     /**
-     * ERROR - 4
-     * <p>
-     * Logs a message object with the {@link LogBinderType ERROR} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void fatal(String format, Object... arguments) {
+        logDelegator.fatal(format, arguments);
+    }
+
+    /**
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void fatal(Throwable throwable, String format, Object... arguments) {
+        logDelegator.fatal(throwable, format, arguments);
+    }
+
+    /**
      * @param object
+     * @see com.devamatre.logger.Logger#error(java.lang.Object)
      */
     @Override
     public void error(Object object) {
-
+        logDelegator.error(object);
     }
 
     /**
-     * Log a message object with the <code>ERROR</code> level including the
-     * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
-     * It delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
      * @param object
      * @param throwable
+     * @see com.devamatre.logger.Logger#error(java.lang.Object,
+     * java.lang.Throwable)
      */
     @Override
     public void error(Object object, Throwable throwable) {
-
+        logDelegator.error(object, throwable);
     }
 
     /**
-     * WARN - 3
-     * <p>
-     * Logs a message object with the {@link LogBinderType WARN} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void error(String format, Object... arguments) {
+        logDelegator.error(format, arguments);
+    }
+
+    /**
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void error(Throwable throwable, String format, Object... arguments) {
+        logDelegator.error(throwable, format, arguments);
+    }
+
+    /**
      * @param object
+     * @see com.devamatre.logger.Logger#warn(java.lang.Object)
      */
     @Override
     public void warn(Object object) {
-
+        logDelegator.warn(object);
     }
 
     /**
-     * Log a message object with the <code>WARN</code> level including the stack
-     * trace of the {@link Throwable} <code>t</code> passed as parameter. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
      * @param object
      * @param throwable
+     * @see com.devamatre.logger.Logger#warn(java.lang.Object,
+     * java.lang.Throwable)
      */
     @Override
     public void warn(Object object, Throwable throwable) {
-
+        logDelegator.warn(object, throwable);
     }
 
     /**
-     * INFO - 2
-     * <p>
-     * Logs a message object with the {@link LogBinderType INFO} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void warn(String format, Object... arguments) {
+        logDelegator.warn(format, arguments);
+    }
+
+    /**
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void warn(Throwable throwable, String format, Object... arguments) {
+        logDelegator.warn(throwable, format, arguments);
+    }
+
+    /**
      * @param object
+     * @see com.devamatre.logger.Logger#info(java.lang.Object)
      */
     @Override
     public void info(Object object) {
-
+        logDelegator.info(object);
     }
 
     /**
-     * Log a message object with the <code>INFO</code> level including the stack
-     * trace of the {@link Throwable} <code>t</code> passed as parameter. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
      * @param object
      * @param throwable
+     * @see com.devamatre.logger.Logger#info(java.lang.Object,
+     * java.lang.Throwable)
      */
     @Override
     public void info(Object object, Throwable throwable) {
-
+        logDelegator.info(object, throwable);
     }
 
     /**
-     * DEBUG - 1
-     * <p>
-     * Logs a message object with the {@link LogBinderType DEBUG} Level. It
-     * delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void info(String format, Object... arguments) {
+        logDelegator.info(format, arguments);
+    }
+
+    /**
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void info(Throwable throwable, String format, Object... arguments) {
+        logDelegator.info(throwable, format, arguments);
+    }
+
+    /**
      * @param object
+     * @see com.devamatre.logger.Logger#debug(java.lang.Object)
      */
     @Override
     public void debug(Object object) {
-
+        logDelegator.debug(object);
     }
 
     /**
-     * Log a message object with the <code>DEBUG</code> level including the
-     * stack trace of the {@link Throwable} <code>t</code> passed as parameter.
-     * It delegates the calls to <code>org.apache.log4j.Category</code>.
-     *
-     * <p>
-     * See <code>org.apache.log4j.Category</code> for more detailed information.
-     * </p>
-     *
      * @param object
      * @param throwable
+     * @see com.devamatre.logger.Logger#debug(java.lang.Object,
+     * java.lang.Throwable)
      */
     @Override
     public void debug(Object object, Throwable throwable) {
+        logDelegator.debug(object, throwable);
+    }
 
+    /**
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void debug(String format, Object... arguments) {
+        logDelegator.debug(format, arguments);
+    }
+
+    /**
+     * @param throwable
+     * @param format
+     * @param arguments
+     */
+    @Override
+    public void debug(Throwable throwable, String format, Object... arguments) {
+        logDelegator.debug(throwable, format, arguments);
+    }
+
+    /**
+     * @return
+     * @see com.devamatre.logger.Logger#isDebugEnabled()
+     */
+    @Override
+    public boolean isDebugEnabled() {
+        return logDelegator.isDebugEnabled();
+    }
+
+    /**
+     * @param debugEnabled
+     * @see com.devamatre.logger.Logger#setDebugEnabled(boolean)
+     */
+    @Override
+    public void setDebugEnabled(boolean debugEnabled) {
+        logDelegator.setDebugEnabled(debugEnabled);
+    }
+
+    /**
+     * @return
+     * @see com.devamatre.logger.Logger#isInfoEnabled()
+     */
+    @Override
+    public boolean isInfoEnabled() {
+        return logDelegator.isInfoEnabled();
+    }
+
+    /**
+     * @return
+     * @see com.devamatre.logger.Logger#isWarnEnabled()
+     */
+    @Override
+    public boolean isWarnEnabled() {
+        return logDelegator.isWarnEnabled();
+    }
+
+    /**
+     * @return
+     * @see com.devamatre.logger.Logger#isErrorEnabled()
+     */
+    @Override
+    public boolean isErrorEnabled() {
+        return logDelegator.isErrorEnabled();
+    }
+
+    /**
+     * @return
+     * @see com.devamatre.logger.Logger#isFatalEnabled()
+     */
+    @Override
+    public boolean isFatalEnabled() {
+        return logDelegator.isFatalEnabled();
     }
 }

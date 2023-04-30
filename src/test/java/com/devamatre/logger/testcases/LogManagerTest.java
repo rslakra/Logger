@@ -28,8 +28,11 @@
  *****************************************************************************/
 package com.devamatre.logger.testcases;
 
-import com.devamatre.logger.*;
-import com.devamatre.logger.Log4jLoggerImpl;
+import com.devamatre.logger.LogManager;
+import com.devamatre.logger.LogUtility;
+import com.devamatre.logger.Logger;
+import com.devamatre.logger.NullLogger;
+import com.devamatre.logger.log4j.Log4JLoggerImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +56,7 @@ public class LogManagerTest {
     public void testGetLogger() {
         final Logger logger = LogManager.getLogger(LogManagerTest.class);
         assertNotNull(logger);
-        assertEquals(Log4jLoggerImpl.class, logger.getClass());
+        assertEquals(Log4JLoggerImpl.class, logger.getClass());
     }
 
     @Test
