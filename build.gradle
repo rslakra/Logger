@@ -6,13 +6,13 @@ plugins {
     id 'java-library'
     id 'application'
     id 'maven-publish'
-    id 'maven'
     id 'java-library-distribution'
 }
 
 group = "com.devamatre"
 //name = "dLogger"
-version = '1.1-SNAPSHOT'
+//version = '0.0.1-SNAPSHOT'
+version = '1.1.0-SNAPSHOT'
 description = "The ${name} Project"
 sourceCompatibility = '1.8'
 //archivesBaseName = "dLogger"
@@ -22,7 +22,7 @@ ext {
     releasesDir = 'Releases'
     log4jVersion = '1.2.17'
     jUnitVersion = '4.13.1'
-    jUnitJupiterVersion = '5.6.0'
+    jUnitJupiterVersion = '5.9.3'
     loggerMainClass = 'com.devamatre.logger.testcases.TestLogger'
 }
 
@@ -39,13 +39,10 @@ repositories {
 
 dependencies {
     implementation "log4j:log4j:${log4jVersion}"
-
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitJupiterVersion}"
-    // The runtime is junit-jupiter-engine for JUnit 5
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 
     // Enabling Support for Old Versions
-
     // junit-vintage-engine for JUnit 3 or 4.
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${jUnitJupiterVersion}"
     // Enabling Support for Old Versions
@@ -61,19 +58,19 @@ test {
 //    }
 }
 
-uploadArchives {
-    repositories.mavenDeployer {
-        pom.project {
-//            name archivesBaseName
-            organization {
-                name orgName
-            }
-        }
-
-        // fake repository used for testing
-        repository(id: 'rslakra', url: 'file:ext.releasesDir/')
-    }
-}
+//uploadArchives {
+//    repositories.mavenDeployer {
+//        pom.project {
+////            name archivesBaseName
+//            organization {
+//                name orgName
+//            }
+//        }
+//
+//        // fake repository used for testing
+//        repository(id: 'rslakra', url: 'file:ext.releasesDir/')
+//    }
+//}
 
 //task sourcesJar(type: Jar) {
 //    archiveClassifier = 'src'
@@ -148,9 +145,24 @@ task createDocs {
     }
 }
 
+
+tasks.withType(Tar).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+//tasks.withType(BootJar).configureEach {
+//    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+//}
+
+tasks.withType(Zip).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
 distributions {
     main {
-        distributionBaseName = "${name}"
+        println "distributionBaseName: ${archivesBaseName}"
+//        println "distributionClassifier: ${classifier}"
+        distributionBaseName = "${archivesBaseName}"
         contents {
             from(createDocs) {
                 into 'docs'
@@ -163,6 +175,13 @@ distributions {
     }
 }
 
+/**
+ * Customizing the publication identity
+ *
+ * Maven restricts groupId and artifactId to a limited character set ([A-Za-z0-9_\\-.]+) and
+ * Gradle enforces this restriction. For version (as well as the artifact extension and classifier properties),
+ * Gradle will handle any valid Unicode character.
+ */
 publishing {
 
     publications {

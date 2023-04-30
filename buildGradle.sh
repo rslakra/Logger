@@ -1,7 +1,9 @@
 #!/bin/bash
-#Author: Rohtash Lakra
+# Author: Rohtash Lakra
+clear
+echo
 echo "Building and publishing to local '~/.m2/repository' ..."
-gradle --daemon clean build publishToMavenLocal
+gradle --daemon --stacktrace clean build publishToMavenLocal
 #gradle --daemon clean build maven-publish
 echo
 #gradle publishToMavenLocal
